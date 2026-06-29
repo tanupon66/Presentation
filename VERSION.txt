@@ -1,5 +1,7 @@
 DMSS-FAAS Interactive Research Story
-Version: 1.0.0
+Version: 1.1.0
 Presentation duration: 14 minutes planned content + 1 minute buffer
 Format: Static PWA / offline-capable / browser-only
 Primary source: Rosa et al., Food Chemistry 487 (2025) 144709
+
+Responsive update: supports portrait and landscape layouts across phone, tablet and desktop viewports with refined mobile-safe spacing and deterministic experiment-state rendering.

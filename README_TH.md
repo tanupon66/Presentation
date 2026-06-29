@@ -49,3 +49,13 @@ python -m http.server 8080
 - Build command: เว้นว่าง
 - Build output directory: `/` หรือโฟลเดอร์ที่มี `index.html`
 - Framework preset: None
+
+
+## อัปเดต v1.1.0
+- ปรับ Responsive UI ให้รองรับหน้าจอขนาดเล็ก กลาง ใหญ่ และโหมดแนวตั้ง/แนวนอนดีขึ้น
+- เอา orientation lock แบบ landscape-only ออก เพื่อให้ติดตั้งเป็น PWA ได้ทั้ง portrait และ landscape
+- ปรับปุ่มและ top bar บนมือถือไม่ให้หาย และใช้งานได้ในจอแคบ
+- เพิ่มการคำนวณ `--vh` เพื่อแก้ปัญหาความสูงเพี้ยนบนมือถือบางรุ่น
+- ปรับ experiment animation ให้ deterministic มากขึ้นเมื่อกดข้ามขั้น รีเซ็ต หรือสลับโลหะ Cd/Pb
+- เพิ่มข้อความกำกับว่า experiment signal เป็น conceptual transient peak ตามลำดับขั้นตอนในบทความ
+- อัปเดต service worker cache version เป็น 1.1.0

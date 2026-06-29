@@ -12,6 +12,14 @@
   const notesTitle = document.getElementById('notesTitle');
   const notesText = document.getElementById('notesText');
   const sceneTime = document.getElementById('sceneTime');
+  const fullscreenButton = document.getElementById('fullscreenButton');
+
+  function setViewportUnit(){
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  }
+  setViewportUnit();
+  window.addEventListener('resize', setViewportUnit, {passive:true});
+  window.addEventListener('orientationchange', setViewportUnit, {passive:true});
 
   function formatTime(sec){
     const s = Math.max(0, Math.floor(sec));
@@ -26,6 +34,10 @@
     scenes[current].classList.add('is-active');
     setTimeout(() => old.classList.remove('is-leaving'), 450);
     updateChrome();
+    if(window.innerWidth <= 800){
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, left: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
   }
   function updateChrome(){
     const scene = scenes[current];
@@ -48,12 +60,17 @@
   }
   notesButton.addEventListener('click', () => toggleNotes());
   closeNotes.addEventListener('click', () => toggleNotes(false));
-  document.getElementById('fullscreenButton').addEventListener('click', async () => {
-    try{
-      if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    }catch(err){ console.warn('Fullscreen unavailable', err); }
-  });
+  if(fullscreenButton && document.fullscreenEnabled !== false){
+    fullscreenButton.addEventListener('click', async () => {
+      try{
+        if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      }catch(err){ console.warn('Fullscreen unavailable', err); }
+    });
+  } else if(fullscreenButton){
+    fullscreenButton.disabled = true;
+    fullscreenButton.title = 'Fullscreen unavailable on this device';
+  }
 
   let timerRemaining = 900, timerId = null;
   const timerButton = document.getElementById('timerButton');
@@ -80,7 +97,7 @@
     if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); updateScene(current + 1, 1); }
     if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); updateScene(current - 1, -1); }
     if(e.key.toLowerCase() === 'n') toggleNotes();
-    if(e.key.toLowerCase() === 'f') document.getElementById('fullscreenButton').click();
+    if(e.key.toLowerCase() === 'f' && fullscreenButton && !fullscreenButton.disabled) fullscreenButton.click();
     if(e.key.toLowerCase() === 'r') resetTimer();
     if(e.key === 'Escape') toggleNotes(false);
   });
@@ -122,14 +139,24 @@
   const experimentStepText = document.getElementById('experimentStep');
   const experimentProgress = document.getElementById('experimentProgress');
   const protocolItems = [...document.querySelectorAll('.protocol-list li')];
-  const expInstructions = [
-    'Add 3 mg of M-OPP to the sample.',
-    'Disperse the particles for 25 min at 1000 rpm.',
-    'Use an external magnet for 10 s to gather M-OPP.',
-    'Lower the magnetic probe and collect the particles.',
-    'Insert the probe into the flame and record the ~16 s transient peak.'
-  ];
+  const runExperimentButton = document.getElementById('runExperiment');
+  const metalButtons = [...document.querySelectorAll('.metal-button')];
+  const metalInfo = {
+    Cd: { pH: '7.0', signal: 'Cd absorbance at 228.8 nm' },
+    Pb: { pH: '4.0', signal: 'Pb absorbance at 283.3 nm' }
+  };
+  let activeMetal = 'Cd';
   let expStep = 0;
+
+  function experimentInstructions(){
+    return [
+      `Add 3 mg of M-OPP to the ${activeMetal} sample adjusted to pH ${metalInfo[activeMetal].pH}.`,
+      'Disperse the particles for 25 min at 1000 rpm to allow adsorption.',
+      'Use an external magnet for 10 s to gather M-OPP at the bottom of the tube.',
+      'Lower the magnetic probe and collect the magnetic particles.',
+      `Insert the probe into the FAAS flame and record the ~16 s transient peak (${metalInfo[activeMetal].signal}).`
+    ];
+  }
   function makeParticles(){
     particles.innerHTML = '';
     for(let i=0;i<38;i++){
@@ -142,38 +169,100 @@
       particles.appendChild(dot);
     }
   }
+  function clearExperimentVisuals(){
+    sampleTube.classList.remove('is-shaking');
+    externalMagnet.classList.remove('is-active');
+    magneticProbe.className = 'magnetic-probe';
+    flame.classList.remove('is-hot');
+    particles.classList.remove('is-settled');
+    particles.style.opacity = '0';
+    experimentSignal.setAttribute('d','M22 105 C80 105 120 105 160 105 C190 105 220 105 280 105');
+  }
+  function applyExperimentState(step){
+    clearExperimentVisuals();
+    if(step >= 0){
+      particles.style.opacity = '1';
+      signalCaption.textContent = `M-OPP dispersed in the ${activeMetal} sample (pH ${metalInfo[activeMetal].pH}).`;
+    } else {
+      signalCaption.textContent = `Waiting for sorbent introduction into the ${activeMetal} sample.`;
+    }
+    if(step >= 1){
+      sampleTube.classList.add('is-shaking');
+      signalCaption.textContent = 'Adsorption in progress during the 25 min contact time.';
+      setTimeout(() => {
+        if(expStep >= 2 || step >= 1) sampleTube.classList.remove('is-shaking');
+      }, 1300);
+    }
+    if(step >= 2){
+      sampleTube.classList.remove('is-shaking');
+      externalMagnet.classList.add('is-active');
+      particles.classList.add('is-settled');
+      signalCaption.textContent = 'Magnetic particles gathered at the bottom of the tube.';
+    }
+    if(step >= 3){
+      magneticProbe.classList.add('is-lowered');
+      particles.style.opacity = '.15';
+      signalCaption.textContent = 'Particles collected at the magnetic probe tip.';
+    }
+    if(step >= 4){
+      magneticProbe.classList.remove('is-lowered');
+      magneticProbe.classList.add('is-flame');
+      flame.classList.add('is-hot');
+      experimentSignal.setAttribute('d','M22 105 C85 105 130 105 165 105 C190 105 196 102 204 73 C211 43 216 16 222 16 C229 16 234 66 242 91 C251 105 267 105 280 105');
+      signalCaption.textContent = `Conceptual transient peak (~16 s): ${metalInfo[activeMetal].signal}.`;
+    }
+  }
   function renderExperiment(){
-    protocolItems.forEach((li,i) => { li.classList.toggle('is-current', i === expStep); li.classList.toggle('is-done', i < expStep); });
-    experimentStepText.textContent = `Step ${expStep + 1} of 5`;
-    experimentInstruction.textContent = expInstructions[expStep];
-    experimentProgress.style.width = `${(expStep + 1)*20}%`;
+    const instructions = experimentInstructions();
+    protocolItems.forEach((li,i) => {
+      li.classList.toggle('is-current', i === expStep);
+      li.classList.toggle('is-done', i < expStep);
+    });
+    experimentStepText.textContent = `Step ${Math.min(expStep + 1, 5)} of 5`;
+    experimentInstruction.textContent = instructions[Math.min(expStep, instructions.length - 1)];
+    experimentProgress.style.width = `${Math.min((expStep + 1) * 20, 100)}%`;
+    runExperimentButton.innerHTML = expStep > 4 ? 'Experiment complete <span>✓</span>' : 'Run next step <span>→</span>';
   }
   function resetExperiment(){
-    expStep = 0; makeParticles(); particles.style.opacity = '0'; particles.classList.remove('is-settled');
-    sampleTube.classList.remove('is-shaking'); externalMagnet.classList.remove('is-active'); magneticProbe.className = 'magnetic-probe'; flame.classList.remove('is-hot');
-    experimentSignal.setAttribute('d','M22 105 C80 105 120 105 160 105 C190 105 220 105 280 105');
-    signalCaption.textContent = 'Waiting for sorbent introduction'; renderExperiment();
+    expStep = 0;
+    makeParticles();
+    applyExperimentState(-1);
+    renderExperiment();
   }
-  function performExperimentStep(){
-    switch(expStep){
-      case 0: particles.style.opacity = '1'; signalCaption.textContent = 'M-OPP dispersed in sample'; break;
-      case 1: sampleTube.classList.add('is-shaking'); signalCaption.textContent = 'Adsorption in progress'; setTimeout(()=>sampleTube.classList.remove('is-shaking'),1300); break;
-      case 2: externalMagnet.classList.add('is-active'); particles.classList.add('is-settled'); signalCaption.textContent = 'Magnetic particles gathered'; break;
-      case 3: magneticProbe.classList.add('is-lowered'); particles.style.opacity = '.15'; signalCaption.textContent = 'Particles collected at probe tip'; break;
-      case 4:
-        magneticProbe.classList.remove('is-lowered'); magneticProbe.classList.add('is-flame'); flame.classList.add('is-hot');
-        experimentSignal.setAttribute('d','M22 105 C85 105 130 105 165 105 C190 105 196 102 204 73 C211 43 216 16 222 16 C229 16 234 66 242 91 C251 105 267 105 280 105');
-        signalCaption.textContent = 'Maximum absorbance from ~16 s transient peak'; break;
+  function performExperimentStep(step){
+    const target = typeof step === 'number' ? step : expStep;
+    applyExperimentState(target);
+    if(target >= 4){
+      expStep = 5;
+    } else {
+      expStep = target + 1;
     }
-    if(expStep < 4){ expStep++; setTimeout(renderExperiment,250); } else { document.getElementById('runExperiment').innerHTML = 'Experiment complete <span>✓</span>'; }
+    renderExperiment();
   }
-  document.getElementById('runExperiment').addEventListener('click', e => {
-    if(expStep === 4 && flame.classList.contains('is-hot')){ resetExperiment(); e.currentTarget.innerHTML = 'Run next step <span>→</span>'; return; }
+  metalButtons.forEach(btn => btn.addEventListener('click', () => {
+    activeMetal = btn.dataset.metal;
+    metalButtons.forEach(b => b.classList.toggle('is-active', b === btn));
+    if(expStep === 0) applyExperimentState(-1);
+    else applyExperimentState(Math.min(expStep - 1, 4));
+    renderExperiment();
+  }));
+  runExperimentButton.addEventListener('click', () => {
+    if(expStep > 4){
+      resetExperiment();
+      return;
+    }
     performExperimentStep();
   });
-  document.getElementById('resetExperiment').addEventListener('click', () => { resetExperiment(); document.getElementById('runExperiment').innerHTML = 'Run next step <span>→</span>'; });
-  document.querySelectorAll('[data-exp-step]').forEach(btn => btn.addEventListener('click', () => { resetExperiment(); const target = Number(btn.dataset.expStep); for(let i=0;i<=target;i++){ expStep=i; performExperimentStep(); } }));
-  document.querySelectorAll('.metal-button').forEach(btn => btn.addEventListener('click', () => document.querySelectorAll('.metal-button').forEach(b => b.classList.toggle('is-active', b === btn))));
+  document.getElementById('resetExperiment').addEventListener('click', resetExperiment);
+  document.querySelectorAll('[data-exp-step]').forEach(btn => btn.addEventListener('click', () => {
+    const target = Number(btn.dataset.expStep);
+    resetExperiment();
+    for(let step = 0; step <= target; step++){
+      applyExperimentState(step);
+    }
+    expStep = Math.min(target + 1, 5);
+    renderExperiment();
+  }));
   resetExperiment();
 
   // Sorbent synthesis
