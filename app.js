@@ -161,26 +161,31 @@
     compactFitRaf = requestAnimationFrame(applyActiveSceneFit);
   }
   function applyActiveSceneFit(){
-    document.body.classList.toggle('compact-landscape', isCompactLandscape());
+    const compact = isCompactLandscape();
+    document.body.classList.toggle('compact-landscape', compact);
     scenes.forEach(scene => {
       scene.style.zoom = '';
+      scene.style.width = '';
+      scene.style.height = '';
       scene.style.transformOrigin = '';
     });
-    if(!isCompactLandscape()) return;
+    if(!compact) return;
     const active = scenes[current];
     if(!active) return;
     const topbarH = document.querySelector('.topbar')?.offsetHeight || 0;
-    const availableH = Math.max(260, window.innerHeight - topbarH - 12);
-    const availableW = Math.max(320, window.innerWidth - 12);
-    const originalZoom = active.style.zoom;
+    const availableH = Math.max(240, window.innerHeight - topbarH - 8);
+    const availableW = Math.max(320, window.innerWidth - 8);
     active.style.zoom = '1';
-    const contentH = active.scrollHeight || active.offsetHeight;
-    const contentW = active.scrollWidth || active.offsetWidth;
+    active.style.width = '100%';
+    active.style.height = 'auto';
+    const contentH = Math.max(active.scrollHeight, active.offsetHeight, 1);
+    const contentW = Math.max(active.scrollWidth, active.offsetWidth, 1);
     let scale = Math.min(1, availableH / contentH, availableW / contentW);
-    scale = Math.max(0.72, Number.isFinite(scale) ? scale : 1);
+    scale = Math.max(0.50, Number.isFinite(scale) ? scale : 1);
     active.style.zoom = String(scale);
+    active.style.width = `${100 / scale}%`;
+    active.style.height = `${100 / scale}%`;
     active.style.transformOrigin = 'top center';
-    if(originalZoom === '1' && scale === 1) active.style.zoom = '';
   }
 
   function postPresenterState(){
