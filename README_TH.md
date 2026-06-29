@@ -77,3 +77,14 @@ python -m http.server 8080
 - เพิ่ม remote controls บนหน้าผู้นำเสนอ (prev / next / demo / restart / toggle notes / toggle presenter overlay)
 - ปรับ mini chart และ gauge animation ให้ลื่นขึ้น
 - อัปเดต service worker cache เป็น `v1.3.0` และ cache ไฟล์ presenter เพิ่มเติม
+
+
+## Hotfix v1.3.1
+สาเหตุของ UI ซ้อนกันใน v1.3.0 คือ mobile media query กำหนดแถว header ไว้ 58 px แต่ topbar ถูกอนุญาตให้ wrap เป็นหลายแถว ทำให้ความสูงจริงมากกว่า grid row และ slide เริ่มแสดงอยู่ใต้ header นอกจากนี้ปุ่ม utility ทั้งหมดถูกแสดงใน header แทนที่จะย้ายไป popup menu
+
+สิ่งที่แก้:
+- บังคับ mobile header ให้เป็นแถวเดียวและมีความสูงคงที่
+- ซ่อน Demo / Presenter / Dual / Notes จาก header บนมือถือ แล้วย้ายไป popup command menu
+- ให้ slide scroll ภายใน stage โดยไม่ทับ header และ footer
+- ปรับ compact landscape ให้ fit-to-screen มากขึ้น
+- ปรับ service worker เป็น network-first สำหรับ HTML/CSS/JS พร้อม version query `v=1.3.1`
