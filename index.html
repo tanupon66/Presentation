@@ -5,8 +5,8 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#071d24" name="theme-color"/>
-<meta content="Interactive 15-minute research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
-<title>DMSS-FAAS Interactive Research Story</title>
+<meta content="Beautiful bilingual interactive research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
+<title>DMSS-FAAS Interactive Research Story v1.2.0</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="assets/icon.svg" rel="icon" type="image/svg+xml"/>
 <link href="styles.css" rel="stylesheet"/>
@@ -22,12 +22,21 @@
 </div>
 </div>
 <div class="top-actions">
-<div class="timer-wrap" title="15-minute rehearsal timer">
-<span class="timer-label">REHEARSAL</span>
+<div class="timer-wrap hero-timer" title="15-minute rehearsal timer">
+<span class="timer-label" id="timerLabel">REHEARSAL</span>
 <button aria-label="Start or pause timer" class="timer" id="timerButton" type="button">15:00</button>
 </div>
-<button aria-label="Open presenter notes" class="icon-button" id="notesButton" title="Presenter notes (N)" type="button">N</button>
+<div class="control-cluster lang-switch" role="group" aria-label="Language switch">
+<a aria-label="Switch to English" class="chip-button is-active" href="index.html" id="langEnLink">EN</a>
+<a aria-label="Switch to Thai" class="chip-button" href="index_th.html" id="langThLink">TH</a>
+</div>
+<div class="control-cluster utility-switch" role="group" aria-label="Presentation utilities">
+<button aria-label="Toggle demo mode" class="chip-button" id="autoplayButton" title="Auto-play demo mode (D)" type="button">▶ Demo</button>
+<button aria-label="Open presenter mode" class="chip-button" id="presenterButton" title="Presenter mode (P)" type="button">Presenter</button>
+<button aria-label="Open quick notes" class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button>
 <button aria-label="Enter fullscreen" class="icon-button" id="fullscreenButton" title="Fullscreen (F)" type="button">⛶</button>
+</div>
+<div class="demo-indicator" hidden="" id="demoIndicator">Demo mode off</div>
 </div>
 </header>
 <main class="stage" id="stage">
@@ -399,10 +408,50 @@
 <button aria-label="Next scene" class="nav-button" id="nextButton" type="button">→</button>
 </footer>
 <aside aria-hidden="true" class="notes-panel" id="notesPanel">
-<div class="notes-header"><div><span>PRESENTER NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
+<div class="notes-header"><div><span id="notesPanelLabel">QUICK NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
 <p id="notesText"></p>
-<div class="notes-meta"><span>Suggested scene time</span><b id="sceneTime">0:45</b></div>
-<div class="keyboard-help"><b>Keyboard</b><span>← → / Space: navigate</span><span>N: notes</span><span>F: fullscreen</span><span>R: reset timer</span></div>
+<div class="notes-meta"><span id="sceneTimeLabel">Suggested scene time</span><b id="sceneTime">0:45</b></div>
+<div class="keyboard-help"><b id="keyboardHelpLabel">Keyboard</b><span id="kbNav">← → / Space: navigate</span><span id="kbNotes">N: notes</span><span id="kbFull">F: fullscreen</span><span id="kbReset">R: reset timer</span><span id="kbDemo">D: demo mode</span><span id="kbPresenter">P: presenter mode</span></div>
+</aside>
+<aside aria-hidden="true" class="presenter-panel" id="presenterPanel">
+<div class="presenter-header">
+<div>
+<span id="presenterEyebrow">PRESENTER MODE</span>
+<strong id="presenterCurrentTitle">Opening</strong>
+<small id="presenterCurrentIndex">Scene 1 of 12</small>
+</div>
+<div class="presenter-header-actions">
+<button class="chip-button" id="presenterAutoplayButton" type="button">▶ Demo</button>
+<button class="icon-button" id="closePresenter" type="button">×</button>
+</div>
+</div>
+<div class="presenter-grid">
+<section class="presenter-card spotlight-card">
+<span id="presenterCurrentLabel">Current scene</span>
+<h3 id="presenterAudienceTitle">Opening</h3>
+<p id="presenterNotesText">Presenter notes will appear here.</p>
+<div class="presenter-inline-stats">
+<div><small id="presenterSuggestedLabel">Suggested time</small><b id="presenterSceneTime">0:40</b></div>
+<div><small id="presenterCountdownLabel">Auto next in</small><b id="presenterCountdown">—</b></div>
+<div><small id="presenterTimerLabel">Rehearsal timer</small><b id="presenterTimer">15:00</b></div>
+</div>
+<div class="presenter-inline-actions">
+<button class="small-button" id="presenterPrev" type="button">← Prev</button>
+<button class="small-button" id="presenterNext" type="button">Next →</button>
+<button class="small-button" id="presenterRestartDemo" type="button">Restart demo</button>
+</div>
+</section>
+<section class="presenter-card next-scene-card">
+<span id="presenterNextLabel">Up next</span>
+<h3 id="presenterNextTitle">Goal</h3>
+<p id="presenterNextHint">Prepare the transition to the next scene.</p>
+<div class="presenter-mini-timeline" id="presenterMiniTimeline"></div>
+</section>
+<section class="presenter-card scene-list-card">
+<div class="scene-list-head"><span id="sceneListLabel">Scene list</span><small id="sceneListHint">Jump directly to any scene</small></div>
+<div class="presenter-scene-list" id="presenterSceneList"></div>
+</section>
+</div>
 </aside>
 <dialog class="source-dialog" id="sourceDialog">
 <button aria-label="Close source figure" class="dialog-close" type="button">×</button>

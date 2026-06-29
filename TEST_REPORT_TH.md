@@ -1,19 +1,20 @@
-# Test Report — DMSS-FAAS Interactive Research Story v1.1.0
+# Test Report — DMSS-FAAS Interactive Research Story v1.2.0
 
-## Automated sanity checks completed
+## Automated checks completed
 - `app.js` syntax: PASS (`node --check`)
 - `sw.js` syntax: PASS (`node --check`)
 - `manifest.webmanifest` JSON parse: PASS
-- DOM element ID bindings checked: 54 IDs scanned, missing = 0
-- Local asset existence checked: 8 required assets scanned, missing = 0
+- `index.html` parse: PASS
+- `index_th.html` parse: PASS
+- DOM binding check: PASS (all IDs referenced by JavaScript exist in both pages)
 
-## Result details
-- Missing IDs: None
-- Missing assets: None
+## Update verification summary
+- Responsive UI refined with new top control chips and demo indicator
+- Presenter Mode panel added with current scene, next scene, notes, timer, countdown, and jump list
+- Auto-play Demo Mode added and driven by each scene's `data-time`
+- Thai companion page (`index_th.html`) added for bilingual usage
+- Service worker cache updated to `v1.2.0` and now caches the Thai page too
 
-## Responsive and interaction update targets
-- Portrait and landscape layouts supported in manifest (`orientation: any`).
-- Mobile viewport height handled through CSS variable `--vh` updated by JavaScript.
-- Top bar controls remain available on narrow screens.
-- Experiment animation state was refactored to deterministic state rendering for step jumping, reset, and Cd/Pb switching.
-- Mobile scene navigation scrolls to the top of the active scene after navigation.
+## Notes
+- Browser runtime rendering was validated through static sanity checks only in this environment
+- Dynamic content such as chart updates, autoplay countdown, scene labels, notes, and experiment-step animation are all wired through existing DOM IDs verified above

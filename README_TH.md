@@ -59,3 +59,12 @@ python -m http.server 8080
 - ปรับ experiment animation ให้ deterministic มากขึ้นเมื่อกดข้ามขั้น รีเซ็ต หรือสลับโลหะ Cd/Pb
 - เพิ่มข้อความกำกับว่า experiment signal เป็น conceptual transient peak ตามลำดับขั้นตอนในบทความ
 - อัปเดต service worker cache version เป็น 1.1.0
+
+
+## อัปเดต v1.2.0
+- รีเฟรช UI ให้ดูทันสมัยขึ้น โดยเพิ่ม control chips, glass panel และ layout ที่เหมาะกับการนำเสนอมากขึ้น
+- เพิ่ม **Presenter Mode** สำหรับผู้พูด: มี current scene, next scene, scene notes, countdown, rehearsal timer และ scene jump list
+- เพิ่ม **Auto-play Demo Mode** ให้เว็บเปลี่ยนฉากอัตโนมัติตามเวลาที่กำหนดในแต่ละ scene
+- เพิ่ม **2 ภาษา ไทย/อังกฤษ** ผ่าน `index.html` (English) และ `index_th.html` (Thai)
+- เพิ่มการรองรับ install prompt ของ PWA
+- เพิ่มการ cache หน้าไทยใน service worker เพื่อใช้งานแบบ offline ได้
