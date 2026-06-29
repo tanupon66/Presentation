@@ -1,7 +1,7 @@
-const CACHE = 'dmss-faas-interactive-v1.3.1';
+const CACHE = 'dmss-faas-interactive-v1.4.0';
 const CORE = [
   './index.html', './index_th.html', './presenter.html',
-  './styles.css?v=1.3.1', './app.js?v=1.3.1', './presenter.js?v=1.3.1',
+  './styles.css?v=1.4.0', './research_content.js?v=1.4.0', './app.js?v=1.4.0', './presenter.js?v=1.4.0',
   './manifest.webmanifest', './assets/icon.svg',
   './assets/workflow-paper.webp', './assets/characterization-paper.webp', './assets/microscopy-paper.webp'
 ];

@@ -6,10 +6,10 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#071d24" name="theme-color"/>
 <meta content="Beautiful bilingual interactive research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
-<title>DMSS-FAAS Interactive Research Story v1.3.1</title>
+<title>DMSS-FAAS Interactive Research Story v1.4.0</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="assets/icon.svg" rel="icon" type="image/svg+xml"/>
-<link href="styles.css?v=1.3.1" rel="stylesheet"/>
+<link href="styles.css?v=1.4.0" rel="stylesheet"/>
 </head>
 <body>
 <div aria-live="polite" class="app" id="app">
@@ -26,15 +26,15 @@
 <span class="timer-label" id="timerLabel">REHEARSAL</span>
 <button aria-label="Start or pause timer" class="timer" id="timerButton" type="button">15:00</button>
 </div>
-<div class="control-cluster lang-switch" role="group" aria-label="Language switch">
+<div aria-label="Language switch" class="control-cluster lang-switch" role="group">
 <a aria-label="Switch to English" class="chip-button is-active" href="index.html" id="langEnLink">EN</a>
 <a aria-label="Switch to Thai" class="chip-button" href="index_th.html" id="langThLink">TH</a>
 </div>
-<div class="control-cluster utility-switch" role="group" aria-label="Presentation utilities">
+<div aria-label="Presentation utilities" class="control-cluster utility-switch" role="group">
 <button aria-label="Toggle demo mode" class="chip-button" id="autoplayButton" title="Auto-play demo mode (D)" type="button">▶ Demo</button>
 <button aria-label="Open presenter mode" class="chip-button" id="presenterButton" title="Presenter mode (P)" type="button">Presenter</button>
 <button aria-label="Open dual-screen presenter view" class="chip-button" id="dualScreenButton" title="Dual-screen presenter view (G)" type="button">Dual</button>
-<button aria-label="Open quick notes" class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button>
+<button aria-label="Open quick notes" class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button><button aria-label="Open research details" class="chip-button" id="researchButton" title="Research details (E)" type="button">Research</button>
 <button aria-label="Enter fullscreen" class="icon-button" id="fullscreenButton" title="Fullscreen (F)" type="button">⛶</button>
 </div>
 <div class="demo-indicator" hidden="" id="demoIndicator">Demo mode off</div>
@@ -408,12 +408,12 @@
 </div>
 <button aria-label="Next scene" class="nav-button" id="nextButton" type="button">→</button>
 </footer>
-<aside aria-hidden="true" class="notes-panel" id="notesPanel">
-<div class="notes-header"><div><span id="notesPanelLabel">QUICK NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
-<p id="notesText"></p>
+<aside aria-hidden="true" class="notes-panel" id="notesPanel"><div class="notes-header"><div><span id="notesPanelLabel">QUICK NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
+<div class="note-mode-tabs" role="tablist"><button class="note-tab is-active" id="notesQuickTab" type="button">Quick notes</button><button class="note-tab" id="notesScriptTab" type="button">Full script</button></div>
+<div class="note-content is-active" id="notesQuickContent"><p id="notesText"></p></div>
+<div class="note-content script-reader" id="notesScriptContent"><p id="notesScriptText"></p></div>
 <div class="notes-meta"><span id="sceneTimeLabel">Suggested scene time</span><b id="sceneTime">0:45</b></div>
-<div class="keyboard-help"><b id="keyboardHelpLabel">Keyboard</b><span id="kbNav">← → / Space: navigate</span><span id="kbNotes">N: notes</span><span id="kbFull">F: fullscreen</span><span id="kbReset">R: reset timer</span><span id="kbDemo">D: demo mode</span><span id="kbPresenter">P: presenter mode</span></div>
-</aside>
+<div class="keyboard-help"><b id="keyboardHelpLabel">Keyboard</b><span id="kbNav">← → / Space: navigate</span><span id="kbNotes">N: notes</span><span id="kbFull">F: fullscreen</span><span id="kbReset">R: reset timer</span><span id="kbDemo">D: demo mode</span><span id="kbPresenter">P: presenter mode</span><span id="kbResearch">E: research details</span></div></aside>
 <aside aria-hidden="true" class="presenter-panel" id="presenterPanel">
 <div class="presenter-header">
 <div>
@@ -430,7 +430,10 @@
 <section class="presenter-card spotlight-card">
 <span id="presenterCurrentLabel">Current scene</span>
 <h3 id="presenterAudienceTitle">Opening</h3>
-<p id="presenterNotesText">Presenter notes will appear here.</p>
+<div class="presenter-reading-tabs" role="tablist"><button class="presenter-read-tab is-active" id="presenterScriptTab" type="button">Full script</button><button class="presenter-read-tab" id="presenterQuickTab" type="button">Quick notes</button><button class="presenter-read-tab" id="presenterEvidenceTab" type="button">Evidence</button></div>
+<div class="presenter-reading-content script-reader is-active" id="presenterScriptContent"><p id="presenterScriptText">Full speaking script will appear here.</p></div>
+<div class="presenter-reading-content" id="presenterQuickContent"><p id="presenterNotesText">Presenter notes will appear here.</p></div>
+<div class="presenter-reading-content" id="presenterEvidenceContent"><p id="presenterEvidenceText">Research evidence will appear here.</p></div>
 <div class="presenter-inline-stats">
 <div><small id="presenterSuggestedLabel">Suggested time</small><b id="presenterSceneTime">0:40</b></div>
 <div><small id="presenterCountdownLabel">Auto next in</small><b id="presenterCountdown">—</b></div>
@@ -454,32 +457,37 @@
 </section>
 </div>
 </aside>
-<dialog class="source-dialog" id="sourceDialog">
+<aside aria-hidden="true" class="research-panel" id="researchPanel">
+<div class="research-header"><div><span id="researchEyebrow">RESEARCH DEEP DIVE</span><strong id="researchTitle">Opening</strong><small id="researchSourceLine">Rosa et al., Food Chemistry 487 (2025) 144709</small></div><button aria-label="Close research details" id="closeResearch" type="button">×</button></div>
+<div class="research-summary" id="researchSummary"></div>
+<div class="research-section-list" id="researchSectionList"></div>
+<div class="research-caution" id="researchCaution"></div>
+</aside><dialog class="source-dialog" id="sourceDialog">
 <button aria-label="Close source figure" class="dialog-close" type="button">×</button>
 <div class="dialog-copy"><span id="dialogEyebrow">SOURCE FIGURE</span><h3 id="dialogTitle">DMSS-FAAS workflow</h3><p id="dialogDescription">Figure reproduced from the uploaded research paper for classroom seminar use.</p></div>
 <img alt="Source figure from the research paper" id="dialogImage" src="assets/workflow-paper.webp"/>
 </dialog>
 <button aria-label="Open mobile command menu" class="mobile-menu-toggle" id="mobileMenuToggle" type="button">☰</button>
 <div aria-hidden="true" class="mobile-command-sheet" id="mobileCommandSheet">
-  <div class="mobile-command-backdrop" id="mobileMenuBackdrop"></div>
-  <div class="mobile-command-panel">
-    <div class="mobile-command-header"><div><span>COMMANDS</span><strong id="mobileMenuTitle">Quick controls</strong></div><button aria-label="Close mobile menu" class="icon-button" id="closeMobileMenu" type="button">×</button></div>
-    <div class="mobile-command-grid">
-      <button class="mobile-command-button" id="mobilePrev" type="button"><b>←</b><span id="mobilePrevLabel">Previous</span></button>
-      <button class="mobile-command-button" id="mobileNext" type="button"><b>→</b><span id="mobileNextLabel">Next</span></button>
-      <button class="mobile-command-button" id="mobileNotes" type="button"><b>N</b><span id="mobileNotesLabel">Notes</span></button>
-      <button class="mobile-command-button" id="mobilePresenter" type="button"><b>P</b><span id="mobilePresenterLabel">Presenter</span></button>
-      <button class="mobile-command-button" id="mobileDual" type="button"><b>G</b><span id="mobileDualLabel">Dual view</span></button>
-      <button class="mobile-command-button" id="mobileDemo" type="button"><b>D</b><span id="mobileDemoLabel">Demo</span></button>
-      <button class="mobile-command-button" id="mobileTimer" type="button"><b>T</b><span id="mobileTimerLabel">Start / pause timer</span></button>
-      <button class="mobile-command-button" id="mobileReset" type="button"><b>R</b><span id="mobileResetLabel">Reset timer</span></button>
-      <button class="mobile-command-button" id="mobileFullscreen" type="button"><b>⛶</b><span id="mobileFullscreenLabel">Fullscreen</span></button>
-      <a class="mobile-command-button" id="mobileLanguageLink" href="index_th.html"><b>🌐</b><span id="mobileLanguageLabel">ภาษาไทย</span></a>
-    </div>
-  </div>
+<div class="mobile-command-backdrop" id="mobileMenuBackdrop"></div>
+<div class="mobile-command-panel">
+<div class="mobile-command-header"><div><span>COMMANDS</span><strong id="mobileMenuTitle">Quick controls</strong></div><button aria-label="Close mobile menu" class="icon-button" id="closeMobileMenu" type="button">×</button></div>
+<div class="mobile-command-grid">
+<button class="mobile-command-button" id="mobilePrev" type="button"><b>←</b><span id="mobilePrevLabel">Previous</span></button>
+<button class="mobile-command-button" id="mobileNext" type="button"><b>→</b><span id="mobileNextLabel">Next</span></button>
+<button class="mobile-command-button" id="mobileNotes" type="button"><b>N</b><span id="mobileNotesLabel">Notes</span></button><button class="mobile-command-button" id="mobileResearch" type="button"><b>E</b><span id="mobileResearchLabel">Research details</span></button>
+<button class="mobile-command-button" id="mobilePresenter" type="button"><b>P</b><span id="mobilePresenterLabel">Presenter</span></button>
+<button class="mobile-command-button" id="mobileDual" type="button"><b>G</b><span id="mobileDualLabel">Dual view</span></button>
+<button class="mobile-command-button" id="mobileDemo" type="button"><b>D</b><span id="mobileDemoLabel">Demo</span></button>
+<button class="mobile-command-button" id="mobileTimer" type="button"><b>T</b><span id="mobileTimerLabel">Start / pause timer</span></button>
+<button class="mobile-command-button" id="mobileReset" type="button"><b>R</b><span id="mobileResetLabel">Reset timer</span></button>
+<button class="mobile-command-button" id="mobileFullscreen" type="button"><b>⛶</b><span id="mobileFullscreenLabel">Fullscreen</span></button>
+<a class="mobile-command-button" href="index_th.html" id="mobileLanguageLink"><b>🌐</b><span id="mobileLanguageLabel">ภาษาไทย</span></a>
+</div>
+</div>
 </div>
 <div class="install-toast" hidden="" id="installToast"><span>This presentation can be installed and used offline.</span><button id="installButton" type="button">Install</button><button id="dismissInstall" type="button">×</button></div>
 </div>
-<script src="app.js?v=1.3.1"></script>
+<script src="research_content.js?v=1.4.0"></script><script src="app.js?v=1.4.0"></script>
 </body>
 </html>

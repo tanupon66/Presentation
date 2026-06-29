@@ -1,63 +1,40 @@
-# Test Report — DMSS-FAAS Interactive Research Story v1.3.1
+# Test Report — DMSS-FAAS Interactive Research Story v1.4.0
 
-## สาเหตุของบัคที่แก้ไข
-- mobile header ถูกกำหนด grid row ไว้เพียง 58–64 px แต่ปุ่มด้านบน wrap เป็นหลายแถว ทำให้ความสูงจริงของ header มากกว่า row และ slide เริ่มแสดงอยู่ใต้ header
-- `Demo / Presenter / Dual / Notes` ยังถูกแสดงบน mobile header แม้มี popup command menu แล้ว ทำให้ UI แน่นและซ้อนกัน
-- media query รุ่นเก่าหลายชุดทำงานทับกัน ทำให้ mobile stage สลับระหว่าง `position: relative`, `sticky`, `auto height` และ `fixed height`
-- compact landscape เดิมบังคับ layout เป็นคอลัมน์เดียวก่อน scale ทำให้เนื้อหายาวเกินจอแม้มีการย่อ
+## Automated static checks
+- `app.js` syntax: PASS (`node --check`)
+- `presenter.js` syntax: PASS (`node --check`)
+- `research_content.js` syntax: PASS (`node --check`)
+- `sw.js` syntax: PASS (`node --check`)
+- `manifest.webmanifest` JSON parse: PASS
+- `index.html`, `index_th.html`, and `presenter.html` HTML parse: PASS
+- DOM binding check: PASS — every `getElementById()` target exists in the corresponding page
 
-## Automated syntax and structure checks
-- `app.js`: PASS (`node --check`)
-- `presenter.js`: PASS (`node --check`)
-- `sw.js`: PASS (`node --check`)
-- `manifest.webmanifest`: PASS (JSON parse)
-- `index.html`: PASS (HTML parse)
-- `index_th.html`: PASS (HTML parse)
-- `presenter.html`: PASS (HTML parse)
-- Main-page DOM bindings: PASS — 120 referenced IDs found in both language pages
-- Presenter-page DOM bindings: PASS — 24 referenced IDs found
-- Required local assets: PASS
+## Browser interaction checks (Chromium / Playwright)
+Tested at:
+- Desktop: 1440 × 900
+- Mobile portrait: 360 × 800
+- Mobile landscape: 800 × 360
 
-## Browser rendering tests (Chromium)
+Verified:
+- Research panel opens and renders summary + 3 detailed evidence sections
+- Notes panel switches between Quick Notes and Full Script
+- Presenter overlay opens with a full script exceeding 100 characters per scene
+- Scene-specific content updates when navigation changes
+- Header and stage boundaries do not overlap in tested viewport sizes
+- No page-level JavaScript errors were observed during the interaction checks
+- Dual-screen presenter state accepts script, evidence summary, source location, timer, and scene list
 
-### Phone portrait 360 × 800
-- Document size: 360 × 800
-- Header: 64 px
-- Stage: 678 px
-- Footer controls: 58 px
-- Header, stage and footer boundaries do not overlap
-- Desktop utility controls hidden from header
-- Mobile command popup opens correctly
-- No JavaScript page errors detected
+## Scientific-content additions
+- 13 scene-specific deep-dive entries in English and Thai
+- Full speaking scripts in English and Thai
+- Detailed synthesis, instrumentation, optimization, kinetics, isotherms, validation, sensitivity, real-sample results, scope, limitations, and balanced conclusion
+- Interpretation cautions included for slope gain, model inference, non-detects, sample scope, and reporting inconsistencies
 
-### Phone portrait 412 × 915
-- Document size matches viewport: 412 × 915
-- Header / stage / footer boundaries correct
-- Desktop utility controls hidden from header
-- No JavaScript page errors detected
+## Files added
+- `research_content.js`
+- `PRESENTER_SCRIPT_TH.md`
+- `PRESENTER_SCRIPT_EN.md`
 
-### Phone landscape 800 × 360
-- Compact landscape mode active
-- Header reduced to 48 px
-- Footer controls hidden and replaced by popup command button
-- Adsorption scene converted to three-column compact layout and fits in one visible screen
-- No JavaScript page errors detected
-
-### Phone landscape 915 × 412
-- Compact landscape mode active
-- Stage fills the remaining screen after the 48 px header
-- Active scene receives automatic fit scale
-- No JavaScript page errors detected
-
-### Dual-screen presenter 1280 × 800
-- Presenter state rendered successfully
-- Scene title, notes, next scene, rehearsal timer, autoplay countdown and all 13 scene entries displayed
-- No JavaScript page errors detected
-
-## Cache/update behavior
-- Service-worker cache updated to `dmss-faas-interactive-v1.3.1`
-- HTML/CSS/JS changed to network-first behavior
-- CSS and JavaScript URLs include `?v=1.3.1` to reduce stale-cache problems after deployment
-
-## Important limitation
-Automated tests cover the layouts and interactions above. Browser UI, Android WebView behavior and popup permissions can still vary by device. After deployment, a one-time check on the actual presentation phone and laptop/projector setup is recommended.
+## Cache update
+- Service-worker cache updated to `dmss-faas-interactive-v1.4.0`
+- `research_content.js` is included in the offline core cache

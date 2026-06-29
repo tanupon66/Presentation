@@ -1,10 +1,12 @@
-Version: 1.3.1
-Release type: Mobile UI overlap hotfix + cache update
+Version: 1.4.0
+Release type: Research-depth + Full presenter script update
 
-Fixes:
-- Rebuilt the mobile page shell so the header no longer wraps over slide content
-- Utility buttons are hidden from the mobile header and moved to the popup command menu
-- Each slide now scrolls inside a fixed stage in portrait mode instead of extending under the header/footer
-- Compact landscape mode scales the active slide to the available screen with a lower safe scale limit
-- Presenter and notes overlays are non-interactive and invisible until explicitly opened
-- Core HTML/CSS/JS now use network-first service-worker handling and versioned asset URLs to reduce stale UI after deployment
+Highlights:
+- Added scene-specific research deep-dive content for all 13 scenes
+- Added full speaking scripts in English and Thai
+- Quick Notes panel now switches between quick notes and full script
+- Presenter overlay now includes Full Script / Quick Notes / Evidence tabs
+- Dual-screen presenter view now receives and displays the full script, evidence summary, and source location
+- Added Research button on desktop and Research Details command in the mobile popup menu
+- Added interpretation cautions and source locations for each research scene
+- Updated service-worker cache and asset versions to v1.4.0

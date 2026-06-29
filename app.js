@@ -87,6 +87,7 @@
     }
   };
   const t = dict[lang];
+  const contentData = (window.RESEARCH_CONTENT && window.RESEARCH_CONTENT[lang]) || [];
 
   const scenes = [...document.querySelectorAll('.scene')];
   let current = 0;
@@ -135,6 +136,29 @@
   const presenterNext = document.getElementById('presenterNext');
   const presenterRestartDemo = document.getElementById('presenterRestartDemo');
   const presenterAutoplayButton = document.getElementById('presenterAutoplayButton');
+  const presenterScriptText = document.getElementById('presenterScriptText');
+  const presenterEvidenceText = document.getElementById('presenterEvidenceText');
+  const presenterScriptTab = document.getElementById('presenterScriptTab');
+  const presenterQuickTab = document.getElementById('presenterQuickTab');
+  const presenterEvidenceTab = document.getElementById('presenterEvidenceTab');
+  const presenterScriptContent = document.getElementById('presenterScriptContent');
+  const presenterQuickContent = document.getElementById('presenterQuickContent');
+  const presenterEvidenceContent = document.getElementById('presenterEvidenceContent');
+
+  const researchButton = document.getElementById('researchButton');
+  const researchPanel = document.getElementById('researchPanel');
+  const closeResearch = document.getElementById('closeResearch');
+  const researchTitle = document.getElementById('researchTitle');
+  const researchSummary = document.getElementById('researchSummary');
+  const researchSectionList = document.getElementById('researchSectionList');
+  const researchCaution = document.getElementById('researchCaution');
+  const researchSourceLine = document.getElementById('researchSourceLine');
+
+  const notesQuickTab = document.getElementById('notesQuickTab');
+  const notesScriptTab = document.getElementById('notesScriptTab');
+  const notesQuickContent = document.getElementById('notesQuickContent');
+  const notesScriptContent = document.getElementById('notesScriptContent');
+  const notesScriptText = document.getElementById('notesScriptText');
 
   const mobileMenuToggle = document.getElementById('mobileMenuToggle');
   const mobileCommandSheet = document.getElementById('mobileCommandSheet');
@@ -194,6 +218,9 @@
     const payload = {
       type: 'state', lang, title: t.dualWindowTitle, current, total: scenes.length,
       sceneTitle: scene?.dataset.title || '', notes: scene?.dataset.notes || t.noNotes,
+      script: contentData[current]?.script || scene?.dataset.notes || t.noNotes,
+      evidence: contentData[current]?.summary || '',
+      source: contentData[current]?.source || '',
       sceneTime: formatTime(Number(scene?.dataset.time || 0)), timerText: timerButton.textContent,
       nextTitle: nextScene?.dataset.title || '—', autoplayActive, autoplayCountdown,
       demoIndicator: demoIndicator?.textContent || '',
@@ -258,6 +285,15 @@
     document.getElementById('mobileTimerLabel').textContent = t.mobileTimer;
     document.getElementById('mobileResetLabel').textContent = t.mobileReset;
     document.getElementById('mobileFullscreenLabel').textContent = t.mobileFullscreen;
+    document.getElementById('mobileResearchLabel').textContent = lang === 'th' ? 'เนื้อหาเชิงลึก' : 'Research details';
+    researchButton.textContent = lang === 'th' ? 'เนื้อหาเชิงลึก' : 'Research';
+    document.getElementById('researchEyebrow').textContent = lang === 'th' ? 'ข้อมูลวิจัยเชิงลึก' : 'RESEARCH DEEP DIVE';
+    notesQuickTab.textContent = lang === 'th' ? 'โน้ตย่อ' : 'Quick notes';
+    notesScriptTab.textContent = lang === 'th' ? 'สคริปต์เต็ม' : 'Full script';
+    presenterScriptTab.textContent = lang === 'th' ? 'สคริปต์เต็ม' : 'Full script';
+    presenterQuickTab.textContent = lang === 'th' ? 'โน้ตย่อ' : 'Quick notes';
+    presenterEvidenceTab.textContent = lang === 'th' ? 'หลักฐาน' : 'Evidence';
+    document.getElementById('kbResearch').textContent = lang === 'th' ? 'E: เนื้อหาเชิงลึก' : 'E: research details';
   }
 
   function buildPresenterSceneList(){
@@ -302,6 +338,39 @@
     presenterAutoplayButton.textContent = label;
     document.getElementById('mobileDemoLabel').textContent = autoplayActive ? t.demoStop.replace('❚❚ ','') : t.mobileDemo;
   }
+  function setNotesMode(mode){
+    const scriptMode = mode === 'script';
+    notesQuickTab.classList.toggle('is-active', !scriptMode);
+    notesScriptTab.classList.toggle('is-active', scriptMode);
+    notesQuickContent.classList.toggle('is-active', !scriptMode);
+    notesScriptContent.classList.toggle('is-active', scriptMode);
+  }
+  function setPresenterReadingMode(mode){
+    const map = {
+      script: [presenterScriptTab, presenterScriptContent],
+      quick: [presenterQuickTab, presenterQuickContent],
+      evidence: [presenterEvidenceTab, presenterEvidenceContent]
+    };
+    Object.entries(map).forEach(([key, pair]) => {
+      pair[0].classList.toggle('is-active', key === mode);
+      pair[1].classList.toggle('is-active', key === mode);
+    });
+  }
+  function renderResearchDetails(){
+    const data = contentData[current] || {};
+    researchTitle.textContent = scenes[current]?.dataset.title || '';
+    researchSummary.textContent = data.summary || '';
+    researchSourceLine.textContent = data.source || 'Rosa et al., Food Chemistry 487 (2025) 144709';
+    researchSectionList.innerHTML = '';
+    (data.sections || []).forEach((section, index) => {
+      const article = document.createElement('article');
+      article.className = 'research-detail-card';
+      article.innerHTML = `<b>${String(index + 1).padStart(2,'0')}</b><div><h4>${section.title}</h4><p>${section.body}</p></div>`;
+      researchSectionList.appendChild(article);
+    });
+    researchCaution.innerHTML = data.caution ? `<strong>${lang === 'th' ? 'ข้อควรระวังในการตีความ' : 'Interpretation caution'}</strong><p>${data.caution}</p>` : '';
+  }
+
   function updateChrome(){
     const scene = scenes[current];
     progressBar.style.width = `${((current + 1) / scenes.length) * 100}%`;
@@ -310,12 +379,16 @@
     nextButton.disabled = current === scenes.length - 1;
     notesTitle.textContent = scene.dataset.title;
     notesText.textContent = scene.dataset.notes || t.noNotes;
+    notesScriptText.textContent = contentData[current]?.script || scene.dataset.notes || t.noNotes;
     sceneTime.textContent = formatTime(Number(scene.dataset.time || 0));
+    renderResearchDetails();
 
     presenterCurrentTitle.textContent = scene.dataset.title;
     presenterAudienceTitle.textContent = scene.dataset.title;
     presenterCurrentIndex.textContent = `${t.sceneWord} ${current + 1} ${t.ofWord} ${scenes.length}`;
     presenterNotesText.textContent = scene.dataset.notes || t.noNotes;
+    presenterScriptText.textContent = contentData[current]?.script || scene.dataset.notes || t.noNotes;
+    presenterEvidenceText.textContent = contentData[current]?.summary || '';
     presenterSceneTime.textContent = formatTime(Number(scene.dataset.time || 0));
     presenterTimer.textContent = timerButton.textContent;
     presenterNextTitle.textContent = scenes[current + 1] ? scenes[current + 1].dataset.title : '—';
@@ -355,6 +428,12 @@
     presenterPanel.classList.toggle('is-open', open);
     presenterPanel.setAttribute('aria-hidden', String(!open));
   }
+  function toggleResearch(force){
+    const open = typeof force === 'boolean' ? force : !researchPanel.classList.contains('is-open');
+    researchPanel.classList.toggle('is-open', open);
+    researchPanel.setAttribute('aria-hidden', String(!open));
+    if(open) renderResearchDetails();
+  }
   function openDualScreen(){
     const url = `presenter.html?lang=${lang}`;
     const win = window.open(url, 'dmssFaasPresenterWindow', 'popup=yes,width=1280,height=820,resizable=yes');
@@ -362,6 +441,13 @@
   }
   notesButton.addEventListener('click', () => toggleNotes());
   closeNotes.addEventListener('click', () => toggleNotes(false));
+  researchButton.addEventListener('click', () => toggleResearch());
+  closeResearch.addEventListener('click', () => toggleResearch(false));
+  notesQuickTab.addEventListener('click', () => setNotesMode('quick'));
+  notesScriptTab.addEventListener('click', () => setNotesMode('script'));
+  presenterScriptTab.addEventListener('click', () => setPresenterReadingMode('script'));
+  presenterQuickTab.addEventListener('click', () => setPresenterReadingMode('quick'));
+  presenterEvidenceTab.addEventListener('click', () => setPresenterReadingMode('evidence'));
   presenterButton.addEventListener('click', () => togglePresenter());
   closePresenter.addEventListener('click', () => togglePresenter(false));
   if(dualScreenButton) dualScreenButton.addEventListener('click', openDualScreen);
@@ -462,6 +548,7 @@
   document.getElementById('mobilePrev').addEventListener('click', () => { updateScene(current - 1, -1); toggleMobileMenu(false); });
   document.getElementById('mobileNext').addEventListener('click', () => { updateScene(current + 1, 1); toggleMobileMenu(false); });
   document.getElementById('mobileNotes').addEventListener('click', () => { toggleNotes(); toggleMobileMenu(false); });
+  document.getElementById('mobileResearch').addEventListener('click', () => { toggleResearch(); toggleMobileMenu(false); });
   document.getElementById('mobilePresenter').addEventListener('click', () => { togglePresenter(); toggleMobileMenu(false); });
   document.getElementById('mobileDual').addEventListener('click', () => { openDualScreen(); toggleMobileMenu(false); });
   document.getElementById('mobileDemo').addEventListener('click', () => { toggleAutoplay(); toggleMobileMenu(false); });
@@ -480,7 +567,8 @@
     if(e.key.toLowerCase() === 'd') toggleAutoplay();
     if(e.key.toLowerCase() === 'p') togglePresenter();
     if(e.key.toLowerCase() === 'g') openDualScreen();
-    if(e.key === 'Escape'){ toggleNotes(false); togglePresenter(false); toggleMobileMenu(false); }
+    if(e.key.toLowerCase() === 'e') toggleResearch();
+    if(e.key === 'Escape'){ toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false); }
   });
 
   // source figures dialog
@@ -708,6 +796,8 @@
   window.addEventListener('orientationchange', () => { setViewportUnit(); setTimeout(queueFitActiveScene, 60); });
 
   setStaticUILanguage();
+  setNotesMode('quick');
+  setPresenterReadingMode('script');
   buildPresenterSceneList();
   updateAutoplayButtons();
   updateChrome();

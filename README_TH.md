@@ -88,3 +88,13 @@ python -m http.server 8080
 - ให้ slide scroll ภายใน stage โดยไม่ทับ header และ footer
 - ปรับ compact landscape ให้ fit-to-screen มากขึ้น
 - ปรับ service worker เป็น network-first สำหรับ HTML/CSS/JS พร้อม version query `v=1.3.1`
+
+
+## อัปเดต v1.4.0 — เนื้อหาเชิงลึกและสคริปต์ผู้นำเสนอ
+- เพิ่มปุ่ม **Research / เนื้อหาเชิงลึก** เพื่อเปิดรายละเอียดของฉากปัจจุบัน
+- เพิ่มข้อมูลเชิงลึกครบทั้ง 13 ฉาก: วิธีทดลอง ตัวแปร เครื่องมือ แบบจำลอง สถิติ validation ผลตัวอย่างจริง และข้อจำกัด
+- เพิ่ม **Full Script** ภาษาอังกฤษและภาษาไทยในแผง Notes
+- โหมด Presenter มี 3 แท็บ: Full Script, Quick Notes และ Evidence
+- Dual-screen Presenter ส่งสคริปต์เต็ม หลักฐาน และแหล่งอ้างอิงของฉากปัจจุบันไปยังจอผู้พูด
+- เพิ่มข้อควรระวังในการตีความ เช่น sensitivity gain ไม่เท่ากับ accuracy และ not detected ไม่เท่ากับศูนย์
+- ปุ่มลัด `E` ใช้เปิด/ปิด Research Details
