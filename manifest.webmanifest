@@ -1,0 +1,14 @@
+{
+  "name": "DMSS-FAAS Interactive Research Story",
+  "short_name": "DMSS-FAAS",
+  "description": "Interactive 15-minute seminar presentation on cadmium and lead determination in tea and coffee.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#071d24",
+  "theme_color": "#071d24",
+  "icons": [
+    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

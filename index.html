@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#071d24" name="theme-color"/>
+<meta content="Interactive 15-minute research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
+<title>DMSS-FAAS Interactive Research Story</title>
+<link href="manifest.webmanifest" rel="manifest"/>
+<link href="assets/icon.svg" rel="icon" type="image/svg+xml"/>
+<link href="styles.css" rel="stylesheet"/>
+</head>
+<body>
+<div aria-live="polite" class="app" id="app">
+<header class="topbar">
+<div aria-label="DMSS-FAAS research presentation" class="brand">
+<span class="brand-mark">M</span>
+<div>
+<strong>DMSS-FAAS</strong>
+<small>Interactive Research Story</small>
+</div>
+</div>
+<div class="top-actions">
+<div class="timer-wrap" title="15-minute rehearsal timer">
+<span class="timer-label">REHEARSAL</span>
+<button aria-label="Start or pause timer" class="timer" id="timerButton" type="button">15:00</button>
+</div>
+<button aria-label="Open presenter notes" class="icon-button" id="notesButton" title="Presenter notes (N)" type="button">N</button>
+<button aria-label="Enter fullscreen" class="icon-button" id="fullscreenButton" title="Fullscreen (F)" type="button">⛶</button>
+</div>
+</header>
+<main class="stage" id="stage">
+<section class="scene is-active scene-opening" data-notes="เปิดด้วยคำถามง่าย ๆ ว่า ชาและกาแฟที่ดื่มทุกวันอาจมีโลหะหนักในระดับต่ำหรือไม่ จากนั้นบอกว่างานนี้ไม่ได้สร้างเครื่องมือใหม่ทั้งเครื่อง แต่ปรับวิธีเตรียมและนำตัวอย่างเข้าสู่ FAAS ให้มีประสิทธิภาพขึ้น" data-time="40" data-title="Opening">
+<div class="ambient-orb orb-a"></div><div class="ambient-orb orb-b"></div>
+<div class="hero-grid">
+<div class="hero-copy reveal">
+<span class="eyebrow">FOOD CHEMISTRY • 2025 • 15-MINUTE SEMINAR</span>
+<h1>From <em>orange peel</em><br/>to an atomic signal</h1>
+<p class="lead">An interactive reconstruction of how magnetic orange-peel sorbent was used to determine cadmium and lead in tea and coffee by DMSS-FAAS.</p>
+<div class="hero-actions">
+<button class="primary-button" data-next="" type="button">Start the research story <span>→</span></button>
+<button class="ghost-button" data-open="paper" type="button">View source paper figure</button>
+</div>
+<p class="source-line">Rosa et al., <i>Food Chemistry</i> 487 (2025) 144709</p>
+</div>
+<div aria-label="Animated tea, coffee, metal ions and magnetic sorbent illustration" class="hero-visual reveal delay-1">
+<div class="cup tea-cup"><span>TEA</span><i></i></div>
+<div class="cup coffee-cup"><span>COFFEE</span><i></i></div>
+<div class="metal-ion cd-ion">Cd²⁺</div>
+<div class="metal-ion pb-ion">Pb²⁺</div>
+<div class="magnetic-cluster">
+<span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+<div class="magnet-mini"><b>N</b><b>S</b></div>
+<svg aria-hidden="true" class="signal-line" viewbox="0 0 420 180">
+<path class="signal-base" d="M10 145 C80 145,120 145,180 145 S250 145,410 145"></path>
+<path class="signal-peak" d="M10 145 C80 145,120 145,180 145 C215 145,220 142,229 118 C238 94,244 22,252 22 C260 22,265 98,276 126 C286 145,320 145,410 145"></path>
+</svg>
+</div>
+</div>
+<div class="opening-question">Can a common FAAS become sensitive enough for low-level Cd and Pb without complex acid digestion?</div>
+</section>
+<section class="scene" data-notes="เน้นว่านี่เป็นทั้งงานพัฒนาวิธีและงานพิสูจน์ความใช้ได้ เป้าหมายไม่ใช่แค่ให้เกิดสัญญาณ แต่ต้องวัดได้ต่ำกว่าเกณฑ์ ควบคุมความแม่นยำ ความเที่ยง และผลกระทบจากเมทริกซ์" data-time="55" data-title="Goal">
+<div class="section-heading">
+<span class="section-number">01</span>
+<div><span class="eyebrow">RESEARCH GOAL</span><h2>What did the researchers try to prove?</h2></div>
+</div>
+<div class="goal-layout">
+<article class="goal-card main-goal reveal">
+<div class="card-icon target-icon">◎</div>
+<span class="card-kicker">PRIMARY OBJECTIVE</span>
+<h3>Develop and validate a greener FAAS-based method for Cd and Pb in tea and coffee.</h3>
+<p>Magnetic orange peel powder (M-OPP) should capture the metals, permit magnetic separation, and carry the analytes directly into the FAAS flame.</p>
+</article>
+<div class="goal-stack reveal delay-1">
+<article class="goal-card compact"><b>1</b><span>Synthesize and characterize M-OPP</span></article>
+<article class="goal-card compact"><b>2</b><span>Optimize extraction conditions</span></article>
+<article class="goal-card compact"><b>3</b><span>Model kinetics and adsorption capacity</span></article>
+<article class="goal-card compact"><b>4</b><span>Validate linearity, LOD, LOQ, precision and accuracy</span></article>
+<article class="goal-card compact"><b>5</b><span>Apply the method to commercial beverages</span></article>
+</div>
+</div>
+<div class="regulatory-strip reveal delay-2">
+<div><span>ANALYTICAL TARGET</span><strong>Quantify below the maximum residue limits</strong></div>
+<div class="threshold"><span>Cd</span><b>20</b><small>µg L⁻¹</small></div>
+<div class="threshold"><span>Pb</span><b>50</b><small>µg L⁻¹</small></div>
+</div>
+</section>
+<section class="scene" data-notes="เปรียบเทียบแก่นของวิธีเดิมและวิธีใหม่ วิธีเดิมมักย่อยตัวอย่าง ใช้กรดและพ่นสารละลายผ่าน nebulizer โดยมีเพียงบางส่วนเข้าสู่ atomizer ส่วน DMSS-FAAS สกัดโลหะบนอนุภาคแล้วนำอนุภาคเข้าสู่เปลวไฟโดยตรง" data-time="75" data-title="Old vs new">
+<div class="section-heading">
+<span class="section-number">02</span>
+<div><span class="eyebrow">METHOD DIFFERENCE</span><h2>What changes compared with conventional FAAS?</h2></div>
+</div>
+<div aria-label="Compare methods" class="comparison-switch" role="tablist">
+<button class="compare-tab is-selected" data-method="conventional" type="button">Conventional FAAS</button>
+<button class="compare-tab" data-method="dmss" type="button">DMSS-FAAS</button>
+</div>
+<div class="method-comparison reveal">
+<article class="method-panel conventional is-visible" data-method-panel="conventional">
+<div class="method-title"><span class="method-badge">OLD WORKFLOW</span><h3>Digest → nebulize → atomize</h3></div>
+<div class="conventional-visual">
+<div class="acid-bottle">HNO₃</div>
+<div class="heat-vessel"><div class="liquid"></div><span>mineralization</span></div>
+<div class="arrow-flow">→</div>
+<div class="nebulizer"><div class="spray"></div><span>nebulizer</span></div>
+<div class="arrow-flow">→</div>
+<div class="atomizer-box"><div class="tiny-particles"></div><b>~10%</b><span>reaches atomizer</span></div>
+</div>
+<div class="method-points"><span>Strong acids / oxidants</span><span>Time and heat</span><span>Low sample transport efficiency</span></div>
+</article>
+<article class="method-panel dmss" data-method-panel="dmss">
+<div class="method-title"><span class="method-badge">PROPOSED WORKFLOW</span><h3>Capture → magnetically collect → burn directly</h3></div>
+<div class="dmss-mini-flow">
+<div class="mini-step"><i class="tube-icon"></i><span>Cd/Pb captured on M-OPP</span></div><b>→</b>
+<div class="mini-step"><i class="magnet-icon"></i><span>Magnetic separation</span></div><b>→</b>
+<div class="mini-step"><i class="probe-icon"></i><span>Probe collects particles</span></div><b>→</b>
+<div class="mini-step"><i class="flame-icon"></i><span>Direct flame introduction</span></div>
+</div>
+<div class="transport-meter"><span>Extracted analyte delivered to atomization zone</span><div><i style="width:100%"></i></div><strong>High transfer efficiency</strong></div>
+<div class="method-points positive"><span>No complex acid digestion</span><span>Preconcentration</span><span>Stronger transient signal</span></div>
+</article>
+</div>
+<div class="difference-verdict"><b>Central innovation:</b> the sorbent is not only an extractor; it becomes the sample carrier into the flame.</div>
+</section>
+<section class="scene" data-notes="สาธิตขั้นตอนตาม Fig. 1 ทีละขั้น 30 mL ตัวอย่าง + M-OPP 3 mg เขย่า 25 นาที แยกด้วยแม่เหล็ก 10 วินาที เก็บด้วย probe และนำเข้าเปลวไฟ สัญญาณเป็น transient peak ประมาณ 16 วินาที" data-time="115" data-title="Virtual experiment">
+<div class="section-heading">
+<span class="section-number">03</span>
+<div><span class="eyebrow">INTERACTIVE METHOD</span><h2>Run the DMSS-FAAS experiment</h2></div>
+<button class="small-button" id="resetExperiment" type="button">Reset</button>
+</div>
+<div class="experiment-layout">
+<div class="experiment-stage reveal">
+<div class="lab-bench">
+<div class="sample-tube" id="sampleTube">
+<div class="tube-liquid"></div>
+<div aria-hidden="true" class="particles" id="particles"></div>
+<span class="tube-label">30 mL sample</span>
+</div>
+<div class="external-magnet" id="externalMagnet"><b>N</b><b>S</b></div>
+<div class="magnetic-probe" id="magneticProbe"><span></span><i></i></div>
+<div class="faas-unit">
+<div class="burner-flame" id="flame"></div>
+<div class="burner"></div>
+<div class="beam"></div>
+<span>FAAS</span>
+</div>
+<div class="signal-monitor">
+<svg aria-label="Transient absorbance signal" viewbox="0 0 300 130">
+<path class="axis" d="M12 110 H288 M22 10 V112"></path>
+<path class="experiment-signal" d="M22 105 C80 105 120 105 160 105 C190 105 220 105 280 105" id="experimentSignal"></path>
+</svg>
+<span id="signalCaption">Waiting for sorbent introduction</span>
+</div>
+</div>
+<div class="experiment-status">
+<span id="experimentStep">Step 1 of 5</span>
+<strong id="experimentInstruction">Add 3 mg of M-OPP to the sample.</strong>
+<div class="experiment-progress"><i id="experimentProgress"></i></div>
+</div>
+</div>
+<aside class="experiment-controls reveal delay-1">
+<div class="metal-select">
+<button class="metal-button is-active" data-metal="Cd" type="button">Cd <small>pH 7.0</small></button>
+<button class="metal-button" data-metal="Pb" type="button">Pb <small>pH 4.0</small></button>
+</div>
+<ol class="protocol-list">
+<li class="is-current"><button data-exp-step="0" type="button"><b>01</b><span>Add 3 mg M-OPP</span></button></li>
+<li><button data-exp-step="1" type="button"><b>02</b><span>Shake 25 min at 1000 rpm</span></button></li>
+<li><button data-exp-step="2" type="button"><b>03</b><span>Magnetic separation, 10 s</span></button></li>
+<li><button data-exp-step="3" type="button"><b>04</b><span>Collect with magnetic probe</span></button></li>
+<li><button data-exp-step="4" type="button"><b>05</b><span>Insert into flame and read peak</span></button></li>
+</ol>
+<button class="primary-button full" id="runExperiment" type="button">Run next step <span>→</span></button>
+<button class="text-button" data-open="paper" type="button">Compare with Fig. 1 from the paper</button>
+</aside>
+</div>
+</section>
+<section class="scene" data-notes="อธิบายว่าทำไมเชื่อว่าวัสดุ M-OPP ถูกสร้างสำเร็จและเหมาะกับการจับโลหะ FTIR แสดง Fe-O และหมู่ฟังก์ชัน zeta potential เป็นลบเหนือ pH 3 ภาพ TEM/SEM และพื้นที่ผิวสนับสนุนลักษณะทางกายภาพ" data-time="80" data-title="Sorbent evidence">
+<div class="section-heading">
+<span class="section-number">04</span>
+<div><span class="eyebrow">MATERIAL + PROOF</span><h2>How was magnetic orange peel powder made and verified?</h2></div>
+</div>
+<div class="sorbent-layout">
+<div class="synthesis-flow reveal">
+<button class="synthesis-step is-active" data-synthesis="wash" type="button"><i>01</i><b>Wash &amp; dry</b><span>Orange peel, 60 °C</span></button>
+<button class="synthesis-step" data-synthesis="grind" type="button"><i>02</i><b>Grind &amp; sieve</b><span>&lt;106 µm</span></button>
+<button class="synthesis-step" data-synthesis="magnetize" type="button"><i>03</i><b>Add Fe₃O₄</b><span>Co-precipitation</span></button>
+<button class="synthesis-step" data-synthesis="separate" type="button"><i>04</i><b>Magnetic recovery</b><span>Wash, dry, sieve</span></button>
+<div class="synthesis-visual state-wash" id="synthesisVisual">
+<div class="orange-peel-shape"></div>
+<div class="powder-cloud"></div>
+<div class="iron-dots"></div>
+<div class="synthesis-magnet"><b>N</b><b>S</b></div>
+</div>
+</div>
+<div class="evidence-grid reveal delay-1">
+<article class="evidence-card"><span>CHEMICAL</span><b>FTIR</b><p>Fe–O band near 580 cm⁻¹ supports magnetite incorporation; carboxyl and hydroxyl groups provide binding sites.</p></article>
+<article class="evidence-card"><span>SURFACE CHARGE</span><b>Zeta potential</b><p>Negative surface charge above pH 3 favors electrostatic interaction with Cd²⁺ and Pb²⁺.</p></article>
+<article class="evidence-card"><span>MORPHOLOGY</span><b>TEM / SEM</b><p>Aggregated, heterogeneous particles and a rougher surface support accessible adsorption sites.</p></article>
+<article class="evidence-card metrics"><span>PHYSICAL</span><div><b>41.637</b><small>m² g⁻¹ surface area</small></div><div><b>27.20 ± 1.63</b><small>µm average particle size</small></div></article>
+</div>
+</div>
+<div class="evidence-actions"><button class="ghost-button" data-open="characterization" type="button">Open Fig. 2 characterization</button><button class="ghost-button" data-open="microscopy" type="button">Open Fig. 3 microscopy</button></div>
+</section>
+<section class="scene" data-notes="เลื่อนค่าตัวแปรเพื่อแสดงว่าแบบจำลอง DOE ทำนาย absorbance สูงขึ้นเมื่อใช้ระดับสูงของตัวแปรในช่วงที่ศึกษา ค่าที่ใช้จริงคือ 30 mL, 3 mg, 25 นาที อธิบายว่านี่เป็นผลภายในขอบเขตแบบ factorial ไม่ใช่การทำนายนอกช่วง" data-time="70" data-title="Optimization">
+<div class="section-heading">
+<span class="section-number">05</span>
+<div><span class="eyebrow">DESIGN OF EXPERIMENTS</span><h2>Why were 30 mL, 3 mg and 25 min selected?</h2></div>
+</div>
+<div class="optimization-layout">
+<div class="optimizer reveal">
+<div class="optimizer-toolbar">
+<label>Matrix<select id="matrixSelect"><option value="tea">Tea</option><option value="coffee">Coffee</option></select></label>
+<label>Metal<select id="optimizerMetal"><option value="Cd">Cd</option><option value="Pb">Pb</option></select></label>
+</div>
+<label class="range-row"><span>Sample volume <b id="volumeValue">30 mL</b></span><input id="volumeRange" max="30" min="5" step="1" type="range" value="30"/></label>
+<label class="range-row"><span>M-OPP mass <b id="massValue">3.0 mg</b></span><input id="massRange" max="3" min="0.5" step="0.1" type="range" value="3"/></label>
+<label class="range-row"><span>Contact time <b id="timeValue">25 min</b></span><input id="timeRange" max="25" min="3" step="1" type="range" value="25"/></label>
+<button class="primary-button full" id="setOptimum" type="button">Set optimized condition</button>
+<p class="model-note">Model-based visualization using the paper's factorial regression within the studied ranges.</p>
+</div>
+<div class="response-card reveal delay-1">
+<span>PREDICTED ABSORBANCE</span>
+<strong id="predictedAbsorbance">1.290</strong>
+<div class="response-gauge"><i id="responseGauge"></i></div>
+<div class="optimization-verdict" id="optimizationVerdict">Optimized region reached</div>
+<div class="doe-proof"><div><b>2³ factorial</b><span>screened volume, time and mass</span></div><div><b>Doehlert</b><span>refined volume and time</span></div><div><b>R² 0.911–0.977</b><span>reduced regression models</span></div></div>
+</div>
+</div>
+</section>
+<section class="scene" data-notes="แยก kinetics กับ isotherm ให้ชัด kinetics บอกความเร็วและรูปแบบการดูดซับ ส่วน qmax คือความจุสูงสุดของวัสดุ ไม่ใช่ความเข้มข้นในเครื่องดื่ม Pb จับได้มากกว่า Cd อย่างชัดเจน" data-time="65" data-title="Adsorption">
+<div class="section-heading">
+<span class="section-number">06</span>
+<div><span class="eyebrow">MECHANISM</span><h2>How do Cd and Pb behave on M-OPP?</h2></div>
+</div>
+<div class="adsorption-toggle"><button class="adsorb-button is-active" data-adsorb="Cd" type="button">Cadmium</button><button class="adsorb-button" data-adsorb="Pb" type="button">Lead</button></div>
+<div class="adsorption-layout">
+<div class="adsorption-animation reveal">
+<div class="surface-label">M-OPP surface: –COO⁻ / –OH</div>
+<div class="sorbent-surface"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="adsorb-ions cd-mode" id="adsorbIons"><i>Cd²⁺</i><i>Cd²⁺</i><i>Cd²⁺</i><i>Cd²⁺</i><i>Cd²⁺</i></div>
+</div>
+<div class="kinetics-card reveal delay-1">
+<span>KINETIC FIT</span><strong id="kineticModel">Avrami fractional-order</strong>
+<svg aria-label="Adsorption kinetics curve" viewbox="0 0 420 210"><path class="axis" d="M45 175 H400 M45 20 V175"></path><path class="curve-line" d="M45 175 C70 80 105 48 160 36 C230 24 310 23 390 23" id="kineticCurve"></path><text x="52" y="18">qₜ</text><text x="385" y="198">t</text></svg>
+<div><b id="kineticQe">0.18 mg g⁻¹</b><span>equilibrium capacity from kinetic model</span></div>
+</div>
+<div class="capacity-card reveal delay-2">
+<span>ISOTHERM FIT</span><strong id="isothermModel">Toth</strong>
+<div class="capacity-orbit"><b id="qmaxValue">0.510</b><small>mg g⁻¹ q<sub>max</sub></small></div>
+<p id="adsorbInterpretation">Cd showed lower capacity and behavior consistent with heterogeneous adsorption sites.</p>
+</div>
+</div>
+<div class="scientific-warning">q<sub>e</sub> and q<sub>max</sub> describe sorbent capacity in adsorption experiments — not contamination levels in beverages.</div>
+</section>
+<section class="scene" data-notes="อธิบายว่าคำว่า sensitivity gain หมายถึงความชันของ calibration curve สูงขึ้น ไม่ใช่ accuracy สูงขึ้น 106 เท่า Pb ได้ผลเด่นที่สุด ขณะที่ coffee gain ต่ำกว่าน้ำและชาเนื่องจากเมทริกซ์ซับซ้อนกว่า" data-time="70" data-title="Performance">
+<div class="section-heading">
+<span class="section-number">07</span>
+<div><span class="eyebrow">RESULTS + EFFICIENCY</span><h2>How much performance was gained?</h2></div>
+</div>
+<div class="performance-layout">
+<div class="sensitivity-card reveal">
+<div class="card-header"><div><span>SENSITIVITY GAIN</span><h3>Calibration slope vs conventional FAAS</h3></div><div class="mini-toggle"><button class="gain-button is-active" data-gain="Cd" type="button">Cd</button><button class="gain-button" data-gain="Pb" type="button">Pb</button></div></div>
+<div aria-label="Sensitivity gain bar chart" class="bar-chart" id="gainChart"></div>
+<p><b>Important:</b> a 106.66× gain means a steeper calibration slope, not 106.66× better accuracy.</p>
+</div>
+<div class="efficiency-grid reveal delay-1">
+<article><span class="eff-icon">◷</span><b>25 min</b><small>d-SPE extraction</small></article>
+<article><span class="eff-icon">⌁</span><b>~16 s</b><small>transient FAAS readout</small></article>
+<article><span class="eff-icon">♻</span><b>Low reagent burden</b><small>avoids large acid volumes</small></article>
+<article><span class="eff-icon">◉</span><b>3 mg</b><small>M-OPP per analysis</small></article>
+</div>
+</div>
+<div class="performance-verdict"><span>Overall assessment</span><strong>High fit-for-purpose efficiency</strong><small>within the tested matrices and laboratory conditions</small></div>
+</section>
+<section class="scene" data-notes="ตอบคำถามความน่าเชื่อถือเป็นชั้นหลักฐาน ไม่ใช่บอกแค่ว่า r สูง มีหลักฐานวัสดุ สถิติ วิธีวิเคราะห์ และตัวอย่างจริง แต่ความพร้อมใช้เป็นมาตรฐานยังปานกลาง เพราะยังทำในห้องเดียวและ probe ใส่ด้วยมือ" data-time="90" data-title="Reliability">
+<div class="section-heading">
+<span class="section-number">08</span>
+<div><span class="eyebrow">VALIDATION + RELIABILITY</span><h2>How credible are the results — and how was that shown?</h2></div>
+</div>
+<div class="reliability-layout">
+<div class="validation-dashboard reveal">
+<article><span>Linearity</span><b>r = 0.991–0.999</b><i class="status good">PASS</i></article>
+<article><span>Cd LOD</span><b>3.24–6.49 µg L⁻¹</b><i class="status good">BELOW MRL</i></article>
+<article><span>Pb LOD</span><b>1.56–5.99 µg L⁻¹</b><i class="status good">BELOW MRL</i></article>
+<article><span>LOQ</span><b>5–10 µg L⁻¹</b><i class="status good">FIT FOR TARGET</i></article>
+<article><span>Precision</span><b>RSD &lt; 20%</b><i class="status good">ACCEPTABLE</i></article>
+<article><span>Blank SD</span><b>&lt; 0.005</b><i class="status good">LOW NOISE</i></article>
+</div>
+<div class="evidence-ladder reveal delay-1">
+<h3>Layers of evidence</h3>
+<ol>
+<li><b>Material evidence</b><span>FTIR, TGA/DTG, zeta potential, TEM/SEM, surface area</span></li>
+<li><b>Statistical evidence</b><span>DOE, ANOVA, residual assumptions, model-selection criteria</span></li>
+<li><b>Analytical evidence</b><span>Matrix-matched calibration, LOD/LOQ, RSD, RE, blanks</span></li>
+<li><b>Application evidence</b><span>Commercial tea and coffee samples plus raw supplementary data</span></li>
+</ol>
+</div>
+<div class="credibility-card reveal delay-2">
+<span>CRITICAL JUDGMENT</span>
+<div class="credibility-ring"><b>Strong</b><small>in-lab evidence</small></div>
+<p>Reliable for the tested method, matrices and laboratory — but not yet proven as a universal standard method.</p>
+<div class="limits-mini"><span>Manual probe insertion</span><span>Single research setting</span><span>No inter-lab validation</span><span>No clear CRM / independent confirmation</span></div>
+</div>
+</div>
+</section>
+<section class="scene" data-notes="แยก detected กับ quantified Cd ไม่พบเหนือ LOD ส่วน Pb พบเหนือ LOD 8 ตัวอย่าง และวัดเชิงปริมาณได้ 5 ตัวอย่าง ทุกค่าต่ำกว่า 50 ไมโครกรัมต่อลิตร ย้ำว่า not detected ไม่เท่ากับศูนย์" data-time="70" data-title="Real samples">
+<div class="section-heading">
+<span class="section-number">09</span>
+<div><span class="eyebrow">REAL-SAMPLE FINDINGS</span><h2>What happened in actual tea and coffee samples?</h2></div>
+</div>
+<div class="sample-summary reveal">
+<article><span>Cd</span><b>Not detected</b><small>in the reported real-sample analysis</small></article>
+<article><span>Pb</span><b>Detected in 8</b><small>samples above LOD</small></article>
+<article><span>Pb</span><b>Quantified in 5</b><small>samples above LOQ</small></article>
+<article><span>Safety comparison</span><b>All below 50</b><small>µg L⁻¹ Pb MRL</small></article>
+</div>
+<div class="real-results-layout">
+<div class="real-sample-chart reveal" id="realSampleChart"></div>
+<div class="sample-inspector reveal delay-1">
+<span>SELECT A QUANTIFIED SAMPLE</span>
+<div class="sample-buttons" id="sampleButtons"></div>
+<div class="selected-sample"><span id="selectedSampleType">Mint tea</span><strong id="selectedSampleValue">10.67</strong><small>µg L⁻¹ Pb</small><div class="mrl-line"><i id="sampleMrlFill"></i><b>MRL 50</b></div></div>
+<p><b>“Not detected”</b> means below the method detection limit — not proof of absolute zero.</p>
+</div>
+</div>
+</section>
+<section class="scene" data-notes="กำหนดขอบเขตให้ชัด งานนี้ใช้ชาหลายชนิดและกาแฟเชิงพาณิชย์จากตลาดท้องถิ่น เตรียมแบบชงน้ำร้อน ไม่ได้ครอบคลุมทุกประเทศ ทุกแบรนด์ หรือทุกชนิดอาหาร และมีความไม่สอดคล้องของจำนวนตัวอย่างกับช่วง Pb ระหว่างส่วนต่าง ๆ ของบทความ" data-time="60" data-title="Scope">
+<div class="section-heading">
+<span class="section-number">10</span>
+<div><span class="eyebrow">EXPERIMENTAL SCOPE</span><h2>What was tested — and what was not?</h2></div>
+</div>
+<div class="scope-layout">
+<div class="scope-in reveal">
+<h3>Inside the study</h3>
+<div class="matrix-chips"><span>Chamomile</span><span>Mate</span><span>Black tea</span><span>Fennel</span><span>Mint</span><span>Green tea</span><span>Hibiscus</span><span>Coffee</span></div>
+<div class="prep-grid"><article><b>Tea</b><span>1 g / 200 mL water<br/>100 °C, 10 min, filtration</span></article><article><b>Coffee</b><span>10 g / 200 mL water<br/>100 °C, 10 min, filtration</span></article><article><b>Cd</b><span>pH 7.0</span></article><article><b>Pb</b><span>pH 4.0</span></article></div>
+</div>
+<div class="scope-out reveal delay-1">
+<h3>Outside the evidence</h3>
+<ul><li>Not a global survey of tea and coffee contamination</li><li>Not validated across multiple laboratories or instruments</li><li>Not automatically transferable to every food matrix</li><li>Manual probe operation may introduce operator dependence</li></ul>
+<div class="reporting-note"><b>Reporting caution</b><span>The paper states 33 tea + 10 coffee samples were purchased, while the results section reports 33 real samples analyzed. The Pb range also differs between the abstract/conclusion and Table 4.</span></div>
+</div>
+</div>
+</section>
+<section class="scene" data-notes="สรุปเป็นคำตอบสมดุล วิธีนี้มีความไวและเป็นมิตรขึ้น เหมาะกับการตรวจติดตามในเงื่อนไขที่ศึกษา แต่ยังไม่ควรเรียกว่าเป็นวิธีมาตรฐานสากล จบด้วยข้อเสนอให้ทำ automation, inter-lab validation และ independent confirmation" data-time="50" data-title="Conclusion">
+<div class="conclusion-grid">
+<div class="conclusion-copy reveal">
+<span class="eyebrow">FINAL VERDICT</span>
+<h2>A promising fit-for-purpose method — not yet a universal standard.</h2>
+<div class="answer-grid">
+<article><span>GOAL</span><p>Develop a greener, sensitive FAAS method for Cd and Pb in tea and coffee.</p></article>
+<article><span>METHOD</span><p>M-OPP captures metals and a magnetic probe introduces the sorbent directly into the flame.</p></article>
+<article><span>DIFFERENCE</span><p>Avoids complex digestion and improves analyte transfer and preconcentration.</p></article>
+<article><span>RESULTS</span><p>LOQ below regulatory limits; sensitivity gain up to 106.66×; quantified Pb below MRL.</p></article>
+<article><span>RELIABILITY</span><p>Strong material, statistical, analytical and real-sample evidence inside one laboratory.</p></article>
+<article><span>NEXT PROOF</span><p>Automation, inter-laboratory validation and independent reference confirmation.</p></article>
+</div>
+</div>
+<div class="verdict-visual reveal delay-1">
+<div class="cycle-graphic">
+<span class="cycle-item c1">Waste-derived<br/>M-OPP</span><span class="cycle-arrow a1">→</span>
+<span class="cycle-item c2">Capture<br/>Cd / Pb</span><span class="cycle-arrow a2">→</span>
+<span class="cycle-item c3">Direct<br/>FAAS signal</span><span class="cycle-arrow a3">→</span>
+<span class="cycle-item c4">Food-safety<br/>monitoring</span>
+<div class="cycle-core">DMSS<br/><b>FAAS</b></div>
+</div>
+<blockquote>“The strongest claim is not the lowest LOD ever; it is a practical balance of sensitivity, simplicity, cost and greener preparation.”</blockquote>
+</div>
+</div>
+<button class="primary-button conclusion-next" data-next="" type="button">Open Q&amp;A evidence panel <span>→</span></button>
+</section>
+<section class="scene scene-qa" data-notes="หน้านี้ใช้ตอบคำถามหลังจบ ไม่รวมในเวลา 15 นาที กดหัวข้อเพื่อเปิดคำตอบสั้น ๆ และสามารถเปิดภาพต้นฉบับจากบทความได้" data-time="0" data-title="Q&amp;A">
+<div class="section-heading">
+<span class="section-number">Q&amp;A</span>
+<div><span class="eyebrow">BACKUP EVIDENCE</span><h2>Questions the audience may ask</h2></div>
+</div>
+<div class="qa-grid">
+<details open=""><summary>Why use 25 minutes if adsorption equilibrium can occur earlier?</summary><p>The kinetic study describes adsorption in a simplified standard solution. The full analytical optimization considered matrix, volume, sorbent mass, signal and reproducibility, and selected 25 minutes as the optimized operating condition.</p></details>
+<details><summary>Why different pH values for Cd and Pb?</summary><p>Adsorption depends on surface charge and metal speciation. The pH screening produced the strongest analytical response at pH 7 for Cd and pH 4 for Pb within the evaluated range.</p></details>
+<details><summary>Does 106.66× mean the result is 106.66× more accurate?</summary><p>No. It is a sensitivity gain based on calibration slope. Accuracy and precision were evaluated separately using relative error and RSD.</p></details>
+<details><summary>Why is matrix-matched calibration necessary?</summary><p>Water, tea and coffee produced significantly different calibration behavior. Matrix-matched curves reduce bias caused by beverage components.</p></details>
+<details><summary>What is the largest practical limitation?</summary><p>Manual probe insertion can affect position, timing and particle delivery. Automation is the clearest next step for reproducibility and routine use.</p></details>
+<details><summary>Can the method already be called a standard method?</summary><p>Not yet. It has strong single-laboratory validation, but broad standardization would require inter-laboratory studies, independent confirmation and robust automation.</p></details>
+</div>
+<div class="reference-footer">
+<div><b>Primary reference</b><span>Rosa, T. A. R. et al. (2025). Food Chemistry, 487, 144709.</span></div>
+<div class="reference-actions"><button class="ghost-button" data-open="paper" type="button">Fig. 1</button><button class="ghost-button" data-open="characterization" type="button">Fig. 2</button><button class="ghost-button" data-open="microscopy" type="button">Fig. 3</button></div>
+</div>
+</section>
+</main>
+<footer class="controls">
+<button aria-label="Previous scene" class="nav-button" id="prevButton" type="button">←</button>
+<div class="scene-status">
+<div class="progress-track"><i id="progressBar"></i></div>
+<span id="sceneLabel">01 / 12 • Opening</span>
+</div>
+<button aria-label="Next scene" class="nav-button" id="nextButton" type="button">→</button>
+</footer>
+<aside aria-hidden="true" class="notes-panel" id="notesPanel">
+<div class="notes-header"><div><span>PRESENTER NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
+<p id="notesText"></p>
+<div class="notes-meta"><span>Suggested scene time</span><b id="sceneTime">0:45</b></div>
+<div class="keyboard-help"><b>Keyboard</b><span>← → / Space: navigate</span><span>N: notes</span><span>F: fullscreen</span><span>R: reset timer</span></div>
+</aside>
+<dialog class="source-dialog" id="sourceDialog">
+<button aria-label="Close source figure" class="dialog-close" type="button">×</button>
+<div class="dialog-copy"><span id="dialogEyebrow">SOURCE FIGURE</span><h3 id="dialogTitle">DMSS-FAAS workflow</h3><p id="dialogDescription">Figure reproduced from the uploaded research paper for classroom seminar use.</p></div>
+<img alt="Source figure from the research paper" id="dialogImage" src="assets/workflow-paper.webp"/>
+</dialog>
+<div class="install-toast" hidden="" id="installToast"><span>This presentation can be installed and used offline.</span><button id="installButton" type="button">Install</button><button id="dismissInstall" type="button">×</button></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

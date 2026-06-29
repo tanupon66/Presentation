@@ -1,0 +1,5 @@
+DMSS-FAAS Interactive Research Story
+Version: 1.0.0
+Presentation duration: 14 minutes planned content + 1 minute buffer
+Format: Static PWA / offline-capable / browser-only
+Primary source: Rosa et al., Food Chemistry 487 (2025) 144709
