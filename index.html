@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#071d24" name="theme-color"/>
 <meta content="Beautiful bilingual interactive research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
-<title>DMSS-FAAS Interactive Research Story v1.2.0</title>
+<title>DMSS-FAAS Interactive Research Story v1.3.0</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="assets/icon.svg" rel="icon" type="image/svg+xml"/>
 <link href="styles.css" rel="stylesheet"/>
@@ -33,6 +33,7 @@
 <div class="control-cluster utility-switch" role="group" aria-label="Presentation utilities">
 <button aria-label="Toggle demo mode" class="chip-button" id="autoplayButton" title="Auto-play demo mode (D)" type="button">▶ Demo</button>
 <button aria-label="Open presenter mode" class="chip-button" id="presenterButton" title="Presenter mode (P)" type="button">Presenter</button>
+<button aria-label="Open dual-screen presenter view" class="chip-button" id="dualScreenButton" title="Dual-screen presenter view (G)" type="button">Dual</button>
 <button aria-label="Open quick notes" class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button>
 <button aria-label="Enter fullscreen" class="icon-button" id="fullscreenButton" title="Fullscreen (F)" type="button">⛶</button>
 </div>
@@ -458,6 +459,25 @@
 <div class="dialog-copy"><span id="dialogEyebrow">SOURCE FIGURE</span><h3 id="dialogTitle">DMSS-FAAS workflow</h3><p id="dialogDescription">Figure reproduced from the uploaded research paper for classroom seminar use.</p></div>
 <img alt="Source figure from the research paper" id="dialogImage" src="assets/workflow-paper.webp"/>
 </dialog>
+<button aria-label="Open mobile command menu" class="mobile-menu-toggle" id="mobileMenuToggle" type="button">☰</button>
+<div aria-hidden="true" class="mobile-command-sheet" id="mobileCommandSheet">
+  <div class="mobile-command-backdrop" id="mobileMenuBackdrop"></div>
+  <div class="mobile-command-panel">
+    <div class="mobile-command-header"><div><span>COMMANDS</span><strong id="mobileMenuTitle">Quick controls</strong></div><button aria-label="Close mobile menu" class="icon-button" id="closeMobileMenu" type="button">×</button></div>
+    <div class="mobile-command-grid">
+      <button class="mobile-command-button" id="mobilePrev" type="button"><b>←</b><span id="mobilePrevLabel">Previous</span></button>
+      <button class="mobile-command-button" id="mobileNext" type="button"><b>→</b><span id="mobileNextLabel">Next</span></button>
+      <button class="mobile-command-button" id="mobileNotes" type="button"><b>N</b><span id="mobileNotesLabel">Notes</span></button>
+      <button class="mobile-command-button" id="mobilePresenter" type="button"><b>P</b><span id="mobilePresenterLabel">Presenter</span></button>
+      <button class="mobile-command-button" id="mobileDual" type="button"><b>G</b><span id="mobileDualLabel">Dual view</span></button>
+      <button class="mobile-command-button" id="mobileDemo" type="button"><b>D</b><span id="mobileDemoLabel">Demo</span></button>
+      <button class="mobile-command-button" id="mobileTimer" type="button"><b>T</b><span id="mobileTimerLabel">Start / pause timer</span></button>
+      <button class="mobile-command-button" id="mobileReset" type="button"><b>R</b><span id="mobileResetLabel">Reset timer</span></button>
+      <button class="mobile-command-button" id="mobileFullscreen" type="button"><b>⛶</b><span id="mobileFullscreenLabel">Fullscreen</span></button>
+      <a class="mobile-command-button" id="mobileLanguageLink" href="index_th.html"><b>🌐</b><span id="mobileLanguageLabel">ภาษาไทย</span></a>
+    </div>
+  </div>
+</div>
 <div class="install-toast" hidden="" id="installToast"><span>This presentation can be installed and used offline.</span><button id="installButton" type="button">Install</button><button id="dismissInstall" type="button">×</button></div>
 </div>
 <script src="app.js"></script>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#071d24"/>
+  <title>DMSS-FAAS Presenter View</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="presenter-window-body">
+  <div class="presenter-window" id="presenterWindow">
+    <header class="presenter-window-header">
+      <div>
+        <span id="pwEyebrow">DUAL-SCREEN PRESENTER VIEW</span>
+        <h1 id="pwTitle">DMSS-FAAS Presenter View</h1>
+        <p id="pwStatus">Waiting for the main presentation window…</p>
+      </div>
+      <div class="presenter-window-stats">
+        <div><small id="pwSceneLabel">Current scene</small><b id="pwSceneCounter">—</b></div>
+        <div><small id="pwTimerLabel">Rehearsal timer</small><b id="pwTimer">15:00</b></div>
+        <div><small id="pwCountdownLabel">Auto next in</small><b id="pwCountdown">—</b></div>
+      </div>
+    </header>
+    <main class="presenter-window-grid">
+      <section class="presenter-window-card focus-card">
+        <span id="pwCurrentEyebrow">CURRENT</span>
+        <h2 id="pwCurrentTitle">Waiting for data</h2>
+        <p id="pwNotes">Open the main presentation and use the Dual button to sync this screen.</p>
+      </section>
+      <section class="presenter-window-card next-card">
+        <span id="pwNextEyebrow">NEXT</span>
+        <h3 id="pwNextTitle">—</h3>
+      </section>
+      <section class="presenter-window-card control-card">
+        <span id="pwControlEyebrow">REMOTE CONTROLS</span>
+        <div class="presenter-window-actions">
+          <button class="small-button" id="pwPrev" type="button">← Prev</button>
+          <button class="small-button" id="pwNext" type="button">Next →</button>
+          <button class="small-button" id="pwDemo" type="button">Demo</button>
+          <button class="small-button" id="pwRestart" type="button">Restart demo</button>
+          <button class="small-button" id="pwNotesToggle" type="button">Toggle notes</button>
+          <button class="small-button" id="pwOverlayToggle" type="button">Toggle presenter overlay</button>
+        </div>
+      </section>
+      <section class="presenter-window-card list-card">
+        <div class="scene-list-head"><span id="pwSceneListLabel">Scene list</span><small id="pwSceneListHint">Live sync from the presentation window</small></div>
+        <div class="presenter-window-scene-list" id="pwSceneList"></div>
+      </section>
+    </main>
+  </div>
+  <script src="presenter.js"></script>
+</body>
+</html>

@@ -68,3 +68,12 @@ python -m http.server 8080
 - เพิ่ม **2 ภาษา ไทย/อังกฤษ** ผ่าน `index.html` (English) และ `index_th.html` (Thai)
 - เพิ่มการรองรับ install prompt ของ PWA
 - เพิ่มการ cache หน้าไทยใน service worker เพื่อใช้งานแบบ offline ได้
+
+
+## อัปเดต v1.3.0
+- เพิ่ม **mobile popup command menu** สำหรับใช้งานบนมือถือ โดยเฉพาะเมื่ออยู่ในโหมดแนวนอน
+- เพิ่ม **compact landscape mode** เพื่อลดปัญหาเนื้อหาเกินหน้าจอในมือถือแนวนอน และพยายามให้แสดงได้ครบในจอเดียวมากขึ้น
+- เพิ่ม **Dual-screen Presenter View** ผ่านไฟล์ `presenter.html` พร้อมการ sync แบบ live ระหว่างหน้าหลักกับหน้าผู้นำเสนอ
+- เพิ่ม remote controls บนหน้าผู้นำเสนอ (prev / next / demo / restart / toggle notes / toggle presenter overlay)
+- ปรับ mini chart และ gauge animation ให้ลื่นขึ้น
+- อัปเดต service worker cache เป็น `v1.3.0` และ cache ไฟล์ presenter เพิ่มเติม

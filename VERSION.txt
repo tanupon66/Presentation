@@ -1,10 +1,10 @@
-Version: 1.2.0
-Release type: UI/UX + Presenter + Demo + Bilingual update
+Version: 1.3.0
+Release type: Mobile UX + Dual-screen presenter + Responsive compact landscape
 
 Highlights:
-- Refined responsive UI with new chip controls, improved glassmorphism, and cleaner presenter-friendly layout
-- Added Presenter Mode panel with scene notes, next-scene preview, jump list, scene timing, and rehearsal timer mirror
-- Added Auto-play Demo Mode based on per-scene suggested times
-- Added Thai companion page (`index_th.html`) for bilingual presentation (Thai / English)
-- Added install prompt handling for the PWA shell
-- Updated service-worker cache to v1.2.0 and included the Thai page in offline cache
+- Added mobile popup command sheet for quick controls
+- Added compact landscape behavior for mobile to keep slides fitting within a single visible screen more reliably
+- Added dual-screen presenter view (`presenter.html`) with live sync through BroadcastChannel/localStorage fallback
+- Added remote presenter controls for next/previous/demo/notes/overlay
+- Smoothed mini chart animations and gauge transitions
+- Updated service-worker cache to v1.3.0 and cached presenter assets
