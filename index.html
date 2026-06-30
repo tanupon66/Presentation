@@ -4,22 +4,24 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta content="#071d24" name="theme-color"/>
+<meta content="#071217" name="theme-color"/>
 <meta content="Beautiful bilingual interactive research presentation on DMSS-FAAS determination of cadmium and lead in tea and coffee." name="description"/>
-<title>DMSS-FAAS Interactive Research Story v1.4.0</title>
+<title>DMSS-FAAS Interactive Research Deck v2.0.0</title>
 <link href="manifest.webmanifest" rel="manifest"/>
 <link href="assets/icon.svg" rel="icon" type="image/svg+xml"/>
-<link href="styles.css?v=1.4.0" rel="stylesheet"/>
+<link href="styles.css?v=2.0.0" rel="stylesheet"/>
 </head>
-<body>
+<body><a class="skip-link" href="#stage">Skip to content</a>
 <div aria-live="polite" class="app" id="app">
 <header class="topbar">
 <div aria-label="DMSS-FAAS research presentation" class="brand">
-<span class="brand-mark">M</span>
-<div>
-<strong>DMSS-FAAS</strong>
-<small>Interactive Research Story</small>
+<span aria-hidden="true" class="brand-mark"><i></i><b>M</b></span>
+<div class="brand-copy"><strong>DMSS-FAAS</strong><small>Research Presentation System</small></div>
 </div>
+<div aria-live="polite" class="chrome-scene">
+<span>CURRENT CHAPTER</span>
+<strong id="chromeSceneTitle">Opening</strong>
+<small id="chromeSceneMeta">01 / 13</small>
 </div>
 <div class="top-actions">
 <div class="timer-wrap hero-timer" title="15-minute rehearsal timer">
@@ -31,17 +33,22 @@
 <a aria-label="Switch to Thai" class="chip-button" href="index_th.html" id="langThLink">TH</a>
 </div>
 <div aria-label="Presentation utilities" class="control-cluster utility-switch" role="group">
-<button aria-label="Toggle demo mode" class="chip-button" id="autoplayButton" title="Auto-play demo mode (D)" type="button">▶ Demo</button>
-<button aria-label="Open presenter mode" class="chip-button" id="presenterButton" title="Presenter mode (P)" type="button">Presenter</button>
-<button aria-label="Open dual-screen presenter view" class="chip-button" id="dualScreenButton" title="Dual-screen presenter view (G)" type="button">Dual</button>
-<button aria-label="Open quick notes" class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button><button aria-label="Open research details" class="chip-button" id="researchButton" title="Research details (E)" type="button">Research</button>
+<button class="chip-button" id="autoplayButton" title="Auto-play demo mode (D)" type="button">▶ Demo</button>
+<button class="chip-button" id="presenterButton" title="Presenter mode (P)" type="button">Presenter</button>
+<button class="chip-button" id="dualScreenButton" title="Dual-screen presenter view (G)" type="button">Dual</button>
+<button class="chip-button" id="notesButton" title="Quick notes (N)" type="button">Notes</button>
+<button class="chip-button" id="researchButton" title="Research details (E)" type="button">Research</button>
 <button aria-label="Enter fullscreen" class="icon-button" id="fullscreenButton" title="Fullscreen (F)" type="button">⛶</button>
 </div>
 <div class="demo-indicator" hidden="" id="demoIndicator">Demo mode off</div>
 </div>
 </header>
-<main class="stage" id="stage">
-<section class="scene is-active scene-opening" data-notes="เปิดด้วยคำถามง่าย ๆ ว่า ชาและกาแฟที่ดื่มทุกวันอาจมีโลหะหนักในระดับต่ำหรือไม่ จากนั้นบอกว่างานนี้ไม่ได้สร้างเครื่องมือใหม่ทั้งเครื่อง แต่ปรับวิธีเตรียมและนำตัวอย่างเข้าสู่ FAAS ให้มีประสิทธิภาพขึ้น" data-time="40" data-title="Opening">
+<aside aria-label="Presentation chapters" class="deck-rail" id="deckRail">
+<div class="rail-head"><span>RESEARCH FLOW</span><strong>13 scenes</strong></div>
+<nav class="deck-rail-list" id="deckRailList"></nav>
+<div class="rail-help"><span>← →</span><p>Navigate with keyboard or tap a chapter.</p></div>
+</aside><main class="stage" id="stage">
+<section class="scene is-active scene-opening" data-notes="เปิดด้วยคำถามง่าย ๆ ว่า ชาและกาแฟที่ดื่มทุกวันอาจมีโลหะหนักในระดับต่ำหรือไม่ จากนั้นบอกว่างานนี้ไม่ได้สร้างเครื่องมือใหม่ทั้งเครื่อง แต่ปรับวิธีเตรียมและนำตัวอย่างเข้าสู่ FAAS ให้มีประสิทธิภาพขึ้น" data-scene-index="0" data-time="40" data-title="Opening" tabindex="-1">
 <div class="ambient-orb orb-a"></div><div class="ambient-orb orb-b"></div>
 <div class="hero-grid">
 <div class="hero-copy reveal">
@@ -71,7 +78,7 @@
 </div>
 <div class="opening-question">Can a common FAAS become sensitive enough for low-level Cd and Pb without complex acid digestion?</div>
 </section>
-<section class="scene" data-notes="เน้นว่านี่เป็นทั้งงานพัฒนาวิธีและงานพิสูจน์ความใช้ได้ เป้าหมายไม่ใช่แค่ให้เกิดสัญญาณ แต่ต้องวัดได้ต่ำกว่าเกณฑ์ ควบคุมความแม่นยำ ความเที่ยง และผลกระทบจากเมทริกซ์" data-time="55" data-title="Goal">
+<section class="scene" data-notes="เน้นว่านี่เป็นทั้งงานพัฒนาวิธีและงานพิสูจน์ความใช้ได้ เป้าหมายไม่ใช่แค่ให้เกิดสัญญาณ แต่ต้องวัดได้ต่ำกว่าเกณฑ์ ควบคุมความแม่นยำ ความเที่ยง และผลกระทบจากเมทริกซ์" data-scene-index="1" data-time="55" data-title="Goal" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">01</span>
 <div><span class="eyebrow">RESEARCH GOAL</span><h2>What did the researchers try to prove?</h2></div>
@@ -97,7 +104,7 @@
 <div class="threshold"><span>Pb</span><b>50</b><small>µg L⁻¹</small></div>
 </div>
 </section>
-<section class="scene" data-notes="เปรียบเทียบแก่นของวิธีเดิมและวิธีใหม่ วิธีเดิมมักย่อยตัวอย่าง ใช้กรดและพ่นสารละลายผ่าน nebulizer โดยมีเพียงบางส่วนเข้าสู่ atomizer ส่วน DMSS-FAAS สกัดโลหะบนอนุภาคแล้วนำอนุภาคเข้าสู่เปลวไฟโดยตรง" data-time="75" data-title="Old vs new">
+<section class="scene" data-notes="เปรียบเทียบแก่นของวิธีเดิมและวิธีใหม่ วิธีเดิมมักย่อยตัวอย่าง ใช้กรดและพ่นสารละลายผ่าน nebulizer โดยมีเพียงบางส่วนเข้าสู่ atomizer ส่วน DMSS-FAAS สกัดโลหะบนอนุภาคแล้วนำอนุภาคเข้าสู่เปลวไฟโดยตรง" data-scene-index="2" data-time="75" data-title="Old vs new" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">02</span>
 <div><span class="eyebrow">METHOD DIFFERENCE</span><h2>What changes compared with conventional FAAS?</h2></div>
@@ -133,7 +140,7 @@
 </div>
 <div class="difference-verdict"><b>Central innovation:</b> the sorbent is not only an extractor; it becomes the sample carrier into the flame.</div>
 </section>
-<section class="scene" data-notes="สาธิตขั้นตอนตาม Fig. 1 ทีละขั้น 30 mL ตัวอย่าง + M-OPP 3 mg เขย่า 25 นาที แยกด้วยแม่เหล็ก 10 วินาที เก็บด้วย probe และนำเข้าเปลวไฟ สัญญาณเป็น transient peak ประมาณ 16 วินาที" data-time="115" data-title="Virtual experiment">
+<section class="scene" data-notes="สาธิตขั้นตอนตาม Fig. 1 ทีละขั้น 30 mL ตัวอย่าง + M-OPP 3 mg เขย่า 25 นาที แยกด้วยแม่เหล็ก 10 วินาที เก็บด้วย probe และนำเข้าเปลวไฟ สัญญาณเป็น transient peak ประมาณ 16 วินาที" data-scene-index="3" data-time="115" data-title="Virtual experiment" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">03</span>
 <div><span class="eyebrow">INTERACTIVE METHOD</span><h2>Run the DMSS-FAAS experiment</h2></div>
@@ -186,7 +193,7 @@
 </aside>
 </div>
 </section>
-<section class="scene" data-notes="อธิบายว่าทำไมเชื่อว่าวัสดุ M-OPP ถูกสร้างสำเร็จและเหมาะกับการจับโลหะ FTIR แสดง Fe-O และหมู่ฟังก์ชัน zeta potential เป็นลบเหนือ pH 3 ภาพ TEM/SEM และพื้นที่ผิวสนับสนุนลักษณะทางกายภาพ" data-time="80" data-title="Sorbent evidence">
+<section class="scene" data-notes="อธิบายว่าทำไมเชื่อว่าวัสดุ M-OPP ถูกสร้างสำเร็จและเหมาะกับการจับโลหะ FTIR แสดง Fe-O และหมู่ฟังก์ชัน zeta potential เป็นลบเหนือ pH 3 ภาพ TEM/SEM และพื้นที่ผิวสนับสนุนลักษณะทางกายภาพ" data-scene-index="4" data-time="80" data-title="Sorbent evidence" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">04</span>
 <div><span class="eyebrow">MATERIAL + PROOF</span><h2>How was magnetic orange peel powder made and verified?</h2></div>
@@ -213,7 +220,7 @@
 </div>
 <div class="evidence-actions"><button class="ghost-button" data-open="characterization" type="button">Open Fig. 2 characterization</button><button class="ghost-button" data-open="microscopy" type="button">Open Fig. 3 microscopy</button></div>
 </section>
-<section class="scene" data-notes="เลื่อนค่าตัวแปรเพื่อแสดงว่าแบบจำลอง DOE ทำนาย absorbance สูงขึ้นเมื่อใช้ระดับสูงของตัวแปรในช่วงที่ศึกษา ค่าที่ใช้จริงคือ 30 mL, 3 mg, 25 นาที อธิบายว่านี่เป็นผลภายในขอบเขตแบบ factorial ไม่ใช่การทำนายนอกช่วง" data-time="70" data-title="Optimization">
+<section class="scene" data-notes="เลื่อนค่าตัวแปรเพื่อแสดงว่าแบบจำลอง DOE ทำนาย absorbance สูงขึ้นเมื่อใช้ระดับสูงของตัวแปรในช่วงที่ศึกษา ค่าที่ใช้จริงคือ 30 mL, 3 mg, 25 นาที อธิบายว่านี่เป็นผลภายในขอบเขตแบบ factorial ไม่ใช่การทำนายนอกช่วง" data-scene-index="5" data-time="70" data-title="Optimization" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">05</span>
 <div><span class="eyebrow">DESIGN OF EXPERIMENTS</span><h2>Why were 30 mL, 3 mg and 25 min selected?</h2></div>
@@ -239,7 +246,7 @@
 </div>
 </div>
 </section>
-<section class="scene" data-notes="แยก kinetics กับ isotherm ให้ชัด kinetics บอกความเร็วและรูปแบบการดูดซับ ส่วน qmax คือความจุสูงสุดของวัสดุ ไม่ใช่ความเข้มข้นในเครื่องดื่ม Pb จับได้มากกว่า Cd อย่างชัดเจน" data-time="65" data-title="Adsorption">
+<section class="scene" data-notes="แยก kinetics กับ isotherm ให้ชัด kinetics บอกความเร็วและรูปแบบการดูดซับ ส่วน qmax คือความจุสูงสุดของวัสดุ ไม่ใช่ความเข้มข้นในเครื่องดื่ม Pb จับได้มากกว่า Cd อย่างชัดเจน" data-scene-index="6" data-time="65" data-title="Adsorption" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">06</span>
 <div><span class="eyebrow">MECHANISM</span><h2>How do Cd and Pb behave on M-OPP?</h2></div>
@@ -264,7 +271,7 @@
 </div>
 <div class="scientific-warning">q<sub>e</sub> and q<sub>max</sub> describe sorbent capacity in adsorption experiments — not contamination levels in beverages.</div>
 </section>
-<section class="scene" data-notes="อธิบายว่าคำว่า sensitivity gain หมายถึงความชันของ calibration curve สูงขึ้น ไม่ใช่ accuracy สูงขึ้น 106 เท่า Pb ได้ผลเด่นที่สุด ขณะที่ coffee gain ต่ำกว่าน้ำและชาเนื่องจากเมทริกซ์ซับซ้อนกว่า" data-time="70" data-title="Performance">
+<section class="scene" data-notes="อธิบายว่าคำว่า sensitivity gain หมายถึงความชันของ calibration curve สูงขึ้น ไม่ใช่ accuracy สูงขึ้น 106 เท่า Pb ได้ผลเด่นที่สุด ขณะที่ coffee gain ต่ำกว่าน้ำและชาเนื่องจากเมทริกซ์ซับซ้อนกว่า" data-scene-index="7" data-time="70" data-title="Performance" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">07</span>
 <div><span class="eyebrow">RESULTS + EFFICIENCY</span><h2>How much performance was gained?</h2></div>
@@ -284,7 +291,7 @@
 </div>
 <div class="performance-verdict"><span>Overall assessment</span><strong>High fit-for-purpose efficiency</strong><small>within the tested matrices and laboratory conditions</small></div>
 </section>
-<section class="scene" data-notes="ตอบคำถามความน่าเชื่อถือเป็นชั้นหลักฐาน ไม่ใช่บอกแค่ว่า r สูง มีหลักฐานวัสดุ สถิติ วิธีวิเคราะห์ และตัวอย่างจริง แต่ความพร้อมใช้เป็นมาตรฐานยังปานกลาง เพราะยังทำในห้องเดียวและ probe ใส่ด้วยมือ" data-time="90" data-title="Reliability">
+<section class="scene" data-notes="ตอบคำถามความน่าเชื่อถือเป็นชั้นหลักฐาน ไม่ใช่บอกแค่ว่า r สูง มีหลักฐานวัสดุ สถิติ วิธีวิเคราะห์ และตัวอย่างจริง แต่ความพร้อมใช้เป็นมาตรฐานยังปานกลาง เพราะยังทำในห้องเดียวและ probe ใส่ด้วยมือ" data-scene-index="8" data-time="90" data-title="Reliability" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">08</span>
 <div><span class="eyebrow">VALIDATION + RELIABILITY</span><h2>How credible are the results — and how was that shown?</h2></div>
@@ -315,7 +322,7 @@
 </div>
 </div>
 </section>
-<section class="scene" data-notes="แยก detected กับ quantified Cd ไม่พบเหนือ LOD ส่วน Pb พบเหนือ LOD 8 ตัวอย่าง และวัดเชิงปริมาณได้ 5 ตัวอย่าง ทุกค่าต่ำกว่า 50 ไมโครกรัมต่อลิตร ย้ำว่า not detected ไม่เท่ากับศูนย์" data-time="70" data-title="Real samples">
+<section class="scene" data-notes="แยก detected กับ quantified Cd ไม่พบเหนือ LOD ส่วน Pb พบเหนือ LOD 8 ตัวอย่าง และวัดเชิงปริมาณได้ 5 ตัวอย่าง ทุกค่าต่ำกว่า 50 ไมโครกรัมต่อลิตร ย้ำว่า not detected ไม่เท่ากับศูนย์" data-scene-index="9" data-time="70" data-title="Real samples" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">09</span>
 <div><span class="eyebrow">REAL-SAMPLE FINDINGS</span><h2>What happened in actual tea and coffee samples?</h2></div>
@@ -336,7 +343,7 @@
 </div>
 </div>
 </section>
-<section class="scene" data-notes="กำหนดขอบเขตให้ชัด งานนี้ใช้ชาหลายชนิดและกาแฟเชิงพาณิชย์จากตลาดท้องถิ่น เตรียมแบบชงน้ำร้อน ไม่ได้ครอบคลุมทุกประเทศ ทุกแบรนด์ หรือทุกชนิดอาหาร และมีความไม่สอดคล้องของจำนวนตัวอย่างกับช่วง Pb ระหว่างส่วนต่าง ๆ ของบทความ" data-time="60" data-title="Scope">
+<section class="scene" data-notes="กำหนดขอบเขตให้ชัด งานนี้ใช้ชาหลายชนิดและกาแฟเชิงพาณิชย์จากตลาดท้องถิ่น เตรียมแบบชงน้ำร้อน ไม่ได้ครอบคลุมทุกประเทศ ทุกแบรนด์ หรือทุกชนิดอาหาร และมีความไม่สอดคล้องของจำนวนตัวอย่างกับช่วง Pb ระหว่างส่วนต่าง ๆ ของบทความ" data-scene-index="10" data-time="60" data-title="Scope" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">10</span>
 <div><span class="eyebrow">EXPERIMENTAL SCOPE</span><h2>What was tested — and what was not?</h2></div>
@@ -354,7 +361,7 @@
 </div>
 </div>
 </section>
-<section class="scene" data-notes="สรุปเป็นคำตอบสมดุล วิธีนี้มีความไวและเป็นมิตรขึ้น เหมาะกับการตรวจติดตามในเงื่อนไขที่ศึกษา แต่ยังไม่ควรเรียกว่าเป็นวิธีมาตรฐานสากล จบด้วยข้อเสนอให้ทำ automation, inter-lab validation และ independent confirmation" data-time="50" data-title="Conclusion">
+<section class="scene" data-notes="สรุปเป็นคำตอบสมดุล วิธีนี้มีความไวและเป็นมิตรขึ้น เหมาะกับการตรวจติดตามในเงื่อนไขที่ศึกษา แต่ยังไม่ควรเรียกว่าเป็นวิธีมาตรฐานสากล จบด้วยข้อเสนอให้ทำ automation, inter-lab validation และ independent confirmation" data-scene-index="11" data-time="50" data-title="Conclusion" tabindex="-1">
 <div class="conclusion-grid">
 <div class="conclusion-copy reveal">
 <span class="eyebrow">FINAL VERDICT</span>
@@ -381,7 +388,7 @@
 </div>
 <button class="primary-button conclusion-next" data-next="" type="button">Open Q&amp;A evidence panel <span>→</span></button>
 </section>
-<section class="scene scene-qa" data-notes="หน้านี้ใช้ตอบคำถามหลังจบ ไม่รวมในเวลา 15 นาที กดหัวข้อเพื่อเปิดคำตอบสั้น ๆ และสามารถเปิดภาพต้นฉบับจากบทความได้" data-time="0" data-title="Q&amp;A">
+<section class="scene scene-qa" data-notes="หน้านี้ใช้ตอบคำถามหลังจบ ไม่รวมในเวลา 15 นาที กดหัวข้อเพื่อเปิดคำตอบสั้น ๆ และสามารถเปิดภาพต้นฉบับจากบทความได้" data-scene-index="12" data-time="0" data-title="Q&amp;A" tabindex="-1">
 <div class="section-heading">
 <span class="section-number">Q&amp;A</span>
 <div><span class="eyebrow">BACKUP EVIDENCE</span><h2>Questions the audience may ask</h2></div>
@@ -401,12 +408,12 @@
 </section>
 </main>
 <footer class="controls">
-<button aria-label="Previous scene" class="nav-button" id="prevButton" type="button">←</button>
+<button aria-label="Previous scene" class="nav-button" id="prevButton" type="button"><b>←</b><span>Previous</span></button>
 <div class="scene-status">
 <div class="progress-track"><i id="progressBar"></i></div>
-<span id="sceneLabel">01 / 12 • Opening</span>
+<span id="sceneLabel">01 / 13 • Opening</span>
 </div>
-<button aria-label="Next scene" class="nav-button" id="nextButton" type="button">→</button>
+<button aria-label="Next scene" class="nav-button" id="nextButton" type="button"><span>Next</span><b>→</b></button>
 </footer>
 <aside aria-hidden="true" class="notes-panel" id="notesPanel"><div class="notes-header"><div><span id="notesPanelLabel">QUICK NOTES</span><strong id="notesTitle">Opening</strong></div><button aria-label="Close notes" id="closeNotes" type="button">×</button></div>
 <div class="note-mode-tabs" role="tablist"><button class="note-tab is-active" id="notesQuickTab" type="button">Quick notes</button><button class="note-tab" id="notesScriptTab" type="button">Full script</button></div>
@@ -488,6 +495,6 @@
 </div>
 <div class="install-toast" hidden="" id="installToast"><span>This presentation can be installed and used offline.</span><button id="installButton" type="button">Install</button><button id="dismissInstall" type="button">×</button></div>
 </div>
-<script src="research_content.js?v=1.4.0"></script><script src="app.js?v=1.4.0"></script>
+<script src="research_content.js?v=2.0.0"></script><script src="app.js?v=2.0.0"></script>
 </body>
 </html>

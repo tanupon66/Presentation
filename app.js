@@ -1,3 +1,4 @@
+/* DMSS-FAAS v2.0.0 application controller */
 (() => {
   'use strict';
 
@@ -98,6 +99,9 @@
   let autoplayTickId = null;
   let deferredInstallPrompt = null;
   let compactFitRaf = null;
+  let sceneTransitionTimer = null;
+  let touchStartX = null;
+  let touchStartY = null;
 
   const channelName = 'dmss-faas-presenter-sync';
   const syncChannel = 'BroadcastChannel' in window ? new BroadcastChannel(channelName) : null;
@@ -119,6 +123,9 @@
   const demoIndicator = document.getElementById('demoIndicator');
   const timerButton = document.getElementById('timerButton');
   const timerLabel = document.getElementById('timerLabel');
+  const chromeSceneTitle = document.getElementById('chromeSceneTitle');
+  const chromeSceneMeta = document.getElementById('chromeSceneMeta');
+  const deckRailList = document.getElementById('deckRailList');
 
   const presenterPanel = document.getElementById('presenterPanel');
   const closePresenter = document.getElementById('closePresenter');
@@ -178,38 +185,18 @@
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   }
   function isCompactLandscape(){
-    return window.innerWidth <= 950 && window.innerHeight <= 520 && window.innerWidth > window.innerHeight;
+    return window.innerWidth <= 1000 && window.innerHeight <= 560 && window.innerWidth > window.innerHeight;
   }
   function queueFitActiveScene(){
     if(compactFitRaf) cancelAnimationFrame(compactFitRaf);
     compactFitRaf = requestAnimationFrame(applyActiveSceneFit);
   }
   function applyActiveSceneFit(){
-    const compact = isCompactLandscape();
-    document.body.classList.toggle('compact-landscape', compact);
-    scenes.forEach(scene => {
-      scene.style.zoom = '';
-      scene.style.width = '';
-      scene.style.height = '';
-      scene.style.transformOrigin = '';
-    });
-    if(!compact) return;
-    const active = scenes[current];
-    if(!active) return;
-    const topbarH = document.querySelector('.topbar')?.offsetHeight || 0;
-    const availableH = Math.max(240, window.innerHeight - topbarH - 8);
-    const availableW = Math.max(320, window.innerWidth - 8);
-    active.style.zoom = '1';
-    active.style.width = '100%';
-    active.style.height = 'auto';
-    const contentH = Math.max(active.scrollHeight, active.offsetHeight, 1);
-    const contentW = Math.max(active.scrollWidth, active.offsetWidth, 1);
-    let scale = Math.min(1, availableH / contentH, availableW / contentW);
-    scale = Math.max(0.50, Number.isFinite(scale) ? scale : 1);
-    active.style.zoom = String(scale);
-    active.style.width = `${100 / scale}%`;
-    active.style.height = `${100 / scale}%`;
-    active.style.transformOrigin = 'top center';
+    // v2 deliberately avoids CSS zoom. Each scene owns its scroll area, so
+    // typography and hit targets remain accurate at every viewport size.
+    document.body.classList.toggle('compact-landscape', isCompactLandscape());
+    document.documentElement.style.setProperty('--viewport-w', `${window.innerWidth}px`);
+    document.documentElement.style.setProperty('--viewport-h', `${window.innerHeight}px`);
   }
 
   function postPresenterState(){
@@ -308,6 +295,21 @@
       presenterSceneList.appendChild(btn);
     });
   }
+  function buildDeckRail(){
+    if(!deckRailList) return;
+    deckRailList.innerHTML = '';
+    scenes.forEach((scene, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'rail-scene';
+      btn.dataset.index = String(index);
+      btn.setAttribute('aria-label', `${lang === 'th' ? 'ไปยังฉาก' : 'Go to scene'} ${index + 1}: ${scene.dataset.title}`);
+      btn.innerHTML = `<b>${String(index + 1).padStart(2, '0')}</b><span>${scene.dataset.title}</span><small>${formatTime(Number(scene.dataset.time || 0))}</small>`;
+      btn.addEventListener('click', () => updateScene(index, index >= current ? 1 : -1));
+      deckRailList.appendChild(btn);
+    });
+  }
+
   function renderMiniTimeline(){
     presenterMiniTimeline.innerHTML = '';
     const start = Math.max(0, current - 1);
@@ -323,12 +325,13 @@
   }
   function updateDemoIndicator(){
     if(!demoIndicator) return;
-    demoIndicator.hidden = false;
     if(!autoplayActive){
+      demoIndicator.hidden = true;
       demoIndicator.classList.remove('is-active');
       demoIndicator.textContent = t.demoOff;
       return;
     }
+    demoIndicator.hidden = false;
     demoIndicator.classList.add('is-active');
     demoIndicator.textContent = autoplayCountdown == null ? t.demoOn : `${t.demoOn} • ${formatTime(autoplayCountdown)}`;
   }
@@ -375,6 +378,16 @@
     const scene = scenes[current];
     progressBar.style.width = `${((current + 1) / scenes.length) * 100}%`;
     sceneLabel.textContent = `${String(current + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')} • ${scene.dataset.title}`;
+    if(chromeSceneTitle) chromeSceneTitle.textContent = scene.dataset.title;
+    if(chromeSceneMeta) chromeSceneMeta.textContent = `${String(current + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}`;
+    if(deckRailList){
+      [...deckRailList.children].forEach((btn, i) => {
+        btn.classList.toggle('is-active', i === current);
+        btn.setAttribute('aria-current', i === current ? 'step' : 'false');
+        if(i === current) btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
+    }
+    document.body.dataset.scene = String(current);
     prevButton.disabled = current === 0;
     nextButton.disabled = current === scenes.length - 1;
     notesTitle.textContent = scene.dataset.title;
@@ -399,17 +412,20 @@
   }
   function updateScene(next, direction = 1){
     if(next < 0 || next >= scenes.length || next === current) return;
+    clearTimeout(sceneTransitionTimer);
     const old = scenes[current];
-    old.classList.remove('is-active');
-    old.classList.toggle('is-leaving', direction > 0);
+    old.classList.remove('is-active', 'is-entering-back');
+    old.setAttribute('aria-hidden', 'true');
     current = next;
-    scenes[current].classList.add('is-active');
-    setTimeout(() => old.classList.remove('is-leaving'), 450);
+    const active = scenes[current];
+    active.classList.toggle('is-entering-back', direction < 0);
+    active.classList.add('is-active');
+    active.setAttribute('aria-hidden', 'false');
+    active.scrollTop = 0;
+    // Remove the directional helper after the entry animation, without
+    // leaving stale classes when navigation is rapid.
+    sceneTransitionTimer = setTimeout(() => active.classList.remove('is-entering-back'), 520);
     updateChrome();
-    if(window.innerWidth <= 800){
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({ top: 0, left: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-    }
   }
 
   prevButton.addEventListener('click', () => updateScene(current - 1, -1));
@@ -418,20 +434,29 @@
   presenterNext.addEventListener('click', () => updateScene(current + 1, 1));
   document.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => updateScene(current + 1, 1)));
 
+  function setOverlay(panel, open){
+    [notesPanel, presenterPanel, researchPanel].forEach(item => {
+      const shouldOpen = item === panel && open;
+      item.classList.toggle('is-open', shouldOpen);
+      item.setAttribute('aria-hidden', String(!shouldOpen));
+    });
+    document.body.classList.toggle('has-overlay', Boolean(open));
+    if(open){
+      const focusTarget = panel.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+      requestAnimationFrame(() => focusTarget?.focus({ preventScroll: true }));
+    }
+  }
   function toggleNotes(force){
     const open = typeof force === 'boolean' ? force : !notesPanel.classList.contains('is-open');
-    notesPanel.classList.toggle('is-open', open);
-    notesPanel.setAttribute('aria-hidden', String(!open));
+    setOverlay(notesPanel, open);
   }
   function togglePresenter(force){
     const open = typeof force === 'boolean' ? force : !presenterPanel.classList.contains('is-open');
-    presenterPanel.classList.toggle('is-open', open);
-    presenterPanel.setAttribute('aria-hidden', String(!open));
+    setOverlay(presenterPanel, open);
   }
   function toggleResearch(force){
     const open = typeof force === 'boolean' ? force : !researchPanel.classList.contains('is-open');
-    researchPanel.classList.toggle('is-open', open);
-    researchPanel.setAttribute('aria-hidden', String(!open));
+    setOverlay(researchPanel, open);
     if(open) renderResearchDetails();
   }
   function openDualScreen(){
@@ -499,8 +524,10 @@
     updateDemoIndicator();
     presenterCountdown.textContent = finalMessage || '—';
     if(finalMessage){
+      demoIndicator.hidden = false;
       demoIndicator.textContent = finalMessage;
       demoIndicator.classList.remove('is-active');
+      setTimeout(() => { if(!autoplayActive) demoIndicator.hidden = true; }, 2400);
     }
     postPresenterState();
   }
@@ -571,6 +598,24 @@
     if(e.key === 'Escape'){ toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false); }
   });
 
+  // Horizontal swipe navigation on touch devices. Vertical scrolling wins
+  // whenever the gesture is primarily vertical, preventing accidental jumps.
+  const stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', event => {
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+  stage.addEventListener('touchend', event => {
+    if(touchStartX == null || touchStartY == null) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    touchStartX = touchStartY = null;
+    if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.35) return;
+    updateScene(current + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  }, { passive: true });
+
   // source figures dialog
   document.querySelectorAll('[data-open]').forEach(btn => btn.addEventListener('click', () => {
     const data = t.figureData[btn.dataset.open];
@@ -578,10 +623,11 @@
     dialogImage.src = data.src;
     dialogTitle.textContent = data.title;
     dialogDescription.textContent = data.desc;
-    sourceDialog.showModal();
+    if(typeof sourceDialog.showModal === 'function') sourceDialog.showModal();
+    else sourceDialog.setAttribute('open', '');
   }));
-  sourceDialog.querySelector('.dialog-close').addEventListener('click', () => sourceDialog.close());
-  sourceDialog.addEventListener('click', e => { if(e.target === sourceDialog) sourceDialog.close(); });
+  sourceDialog.querySelector('.dialog-close').addEventListener('click', () => typeof sourceDialog.close === 'function' ? sourceDialog.close() : sourceDialog.removeAttribute('open'));
+  sourceDialog.addEventListener('click', e => { if(e.target === sourceDialog){ if(typeof sourceDialog.close === 'function') sourceDialog.close(); else sourceDialog.removeAttribute('open'); } });
 
   // method comparison
   document.querySelectorAll('.compare-tab').forEach(tab => tab.addEventListener('click', () => {
@@ -609,20 +655,27 @@
   };
   let activeMetal = 'Cd';
   let expStep = 0;
+  let experimentMotionTimer = null;
   function experimentInstructions(){ return t.expSteps(metalInfo[activeMetal]); }
   function makeParticles(){
     particles.innerHTML = '';
+    // Seeded geometry keeps the visual reproducible across reset, language,
+    // device and recording sessions.
     for(let i = 0; i < 38; i++){
       const dot = document.createElement('i');
-      dot.style.left = `${8 + Math.random() * 80}%`;
-      dot.style.top = `${15 + Math.random() * 72}%`;
-      dot.style.animationDelay = `${-Math.random() * 2}s`;
-      dot.style.setProperty('--left', `${15 + Math.random() * 70}%`);
-      dot.style.setProperty('--settle', `${Math.random() * 12}px`);
+      const x = 8 + ((i * 37) % 79);
+      const y = 15 + ((i * 53) % 70);
+      dot.style.left = `${x}%`;
+      dot.style.top = `${y}%`;
+      dot.style.animationDelay = `${-((i * 17) % 20) / 10}s`;
+      dot.style.setProperty('--left', `${15 + ((i * 29) % 69)}%`);
+      dot.style.setProperty('--settle', `${(i * 7) % 12}px`);
       particles.appendChild(dot);
     }
   }
   function clearExperimentVisuals(){
+    clearTimeout(experimentMotionTimer);
+    experimentMotionTimer = null;
     sampleTube.classList.remove('is-shaking');
     externalMagnet.classList.remove('is-active');
     magneticProbe.className = 'magnetic-probe';
@@ -635,7 +688,7 @@
     clearExperimentVisuals();
     if(step >= 0){ particles.style.opacity = '1'; signalCaption.textContent = t.signalDispersed(activeMetal, metalInfo[activeMetal].pH); }
     else signalCaption.textContent = t.waitingSorbent(activeMetal);
-    if(step >= 1){ sampleTube.classList.add('is-shaking'); signalCaption.textContent = t.signalAdsorption; setTimeout(() => { if(expStep >= 2 || step >= 1) sampleTube.classList.remove('is-shaking'); }, 1300); }
+    if(step >= 1){ sampleTube.classList.add('is-shaking'); signalCaption.textContent = t.signalAdsorption; experimentMotionTimer = setTimeout(() => sampleTube.classList.remove('is-shaking'), 1300); }
     if(step >= 2){ sampleTube.classList.remove('is-shaking'); externalMagnet.classList.add('is-active'); particles.classList.add('is-settled'); signalCaption.textContent = t.signalGathered; }
     if(step >= 3){ magneticProbe.classList.add('is-lowered'); particles.style.opacity = '.15'; signalCaption.textContent = t.signalCollected; }
     if(step >= 4){
@@ -799,6 +852,8 @@
   setNotesMode('quick');
   setPresenterReadingMode('script');
   buildPresenterSceneList();
+  buildDeckRail();
+  scenes.forEach((scene, index) => scene.setAttribute('aria-hidden', String(index !== current)));
   updateAutoplayButtons();
   updateChrome();
   renderTimer();

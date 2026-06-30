@@ -1,12 +1,14 @@
-Version: 1.4.0
-Release type: Research-depth + Full presenter script update
+Version: 2.0.0
+Release type: Full application architecture and UI rebuild
 
 Highlights:
-- Added scene-specific research deep-dive content for all 13 scenes
-- Added full speaking scripts in English and Thai
-- Quick Notes panel now switches between quick notes and full script
-- Presenter overlay now includes Full Script / Quick Notes / Evidence tabs
-- Dual-screen presenter view now receives and displays the full script, evidence summary, and source location
-- Added Research button on desktop and Research Details command in the mobile popup menu
-- Added interpretation cautions and source locations for each research scene
-- Updated service-worker cache and asset versions to v1.4.0
+- Replaced the old zoom-based responsive logic with a viewport-safe app shell
+- Added a desktop chapter rail and synchronized current-scene chrome
+- Rebuilt all scene layouts, cards, charts, controls, overlays, and presenter views
+- Added isolated per-scene scrolling so content never sits under the header or footer
+- Added compact portrait and landscape layouts without hiding scientific content
+- Refactored overlays so Notes, Presenter, and Research panels cannot overlap
+- Added deterministic experiment particles and cancel-safe animation timers
+- Added touch swipe navigation with vertical-scroll protection
+- Improved keyboard focus, ARIA state, reduced-motion support, and dialog fallback
+- Updated the PWA cache and manifest to v2.0.0
