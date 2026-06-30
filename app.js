@@ -1,4 +1,3 @@
-/* DMSS-FAAS v2.0.0 application controller */
 (() => {
   'use strict';
 
@@ -99,9 +98,6 @@
   let autoplayTickId = null;
   let deferredInstallPrompt = null;
   let compactFitRaf = null;
-  let sceneTransitionTimer = null;
-  let touchStartX = null;
-  let touchStartY = null;
 
   const channelName = 'dmss-faas-presenter-sync';
   const syncChannel = 'BroadcastChannel' in window ? new BroadcastChannel(channelName) : null;
@@ -123,9 +119,6 @@
   const demoIndicator = document.getElementById('demoIndicator');
   const timerButton = document.getElementById('timerButton');
   const timerLabel = document.getElementById('timerLabel');
-  const chromeSceneTitle = document.getElementById('chromeSceneTitle');
-  const chromeSceneMeta = document.getElementById('chromeSceneMeta');
-  const deckRailList = document.getElementById('deckRailList');
 
   const presenterPanel = document.getElementById('presenterPanel');
   const closePresenter = document.getElementById('closePresenter');
@@ -185,18 +178,38 @@
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   }
   function isCompactLandscape(){
-    return window.innerWidth <= 1000 && window.innerHeight <= 560 && window.innerWidth > window.innerHeight;
+    return window.innerWidth <= 950 && window.innerHeight <= 520 && window.innerWidth > window.innerHeight;
   }
   function queueFitActiveScene(){
     if(compactFitRaf) cancelAnimationFrame(compactFitRaf);
     compactFitRaf = requestAnimationFrame(applyActiveSceneFit);
   }
   function applyActiveSceneFit(){
-    // v2 deliberately avoids CSS zoom. Each scene owns its scroll area, so
-    // typography and hit targets remain accurate at every viewport size.
-    document.body.classList.toggle('compact-landscape', isCompactLandscape());
-    document.documentElement.style.setProperty('--viewport-w', `${window.innerWidth}px`);
-    document.documentElement.style.setProperty('--viewport-h', `${window.innerHeight}px`);
+    const compact = isCompactLandscape();
+    document.body.classList.toggle('compact-landscape', compact);
+    scenes.forEach(scene => {
+      scene.style.zoom = '';
+      scene.style.width = '';
+      scene.style.height = '';
+      scene.style.transformOrigin = '';
+    });
+    if(!compact) return;
+    const active = scenes[current];
+    if(!active) return;
+    const topbarH = document.querySelector('.topbar')?.offsetHeight || 0;
+    const availableH = Math.max(240, window.innerHeight - topbarH - 8);
+    const availableW = Math.max(320, window.innerWidth - 8);
+    active.style.zoom = '1';
+    active.style.width = '100%';
+    active.style.height = 'auto';
+    const contentH = Math.max(active.scrollHeight, active.offsetHeight, 1);
+    const contentW = Math.max(active.scrollWidth, active.offsetWidth, 1);
+    let scale = Math.min(1, availableH / contentH, availableW / contentW);
+    scale = Math.max(0.50, Number.isFinite(scale) ? scale : 1);
+    active.style.zoom = String(scale);
+    active.style.width = `${100 / scale}%`;
+    active.style.height = `${100 / scale}%`;
+    active.style.transformOrigin = 'top center';
   }
 
   function postPresenterState(){
@@ -206,7 +219,7 @@
       type: 'state', lang, title: t.dualWindowTitle, current, total: scenes.length,
       sceneTitle: scene?.dataset.title || '', notes: scene?.dataset.notes || t.noNotes,
       script: contentData[current]?.script || scene?.dataset.notes || t.noNotes,
-      evidence: contentData[current]?.summary || '',
+      evidence: typeof getSceneEvidenceText === 'function' ? getSceneEvidenceText(current) : (contentData[current]?.summary || ''),
       source: contentData[current]?.source || '',
       sceneTime: formatTime(Number(scene?.dataset.time || 0)), timerText: timerButton.textContent,
       nextTitle: nextScene?.dataset.title || '—', autoplayActive, autoplayCountdown,
@@ -295,21 +308,6 @@
       presenterSceneList.appendChild(btn);
     });
   }
-  function buildDeckRail(){
-    if(!deckRailList) return;
-    deckRailList.innerHTML = '';
-    scenes.forEach((scene, index) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'rail-scene';
-      btn.dataset.index = String(index);
-      btn.setAttribute('aria-label', `${lang === 'th' ? 'ไปยังฉาก' : 'Go to scene'} ${index + 1}: ${scene.dataset.title}`);
-      btn.innerHTML = `<b>${String(index + 1).padStart(2, '0')}</b><span>${scene.dataset.title}</span><small>${formatTime(Number(scene.dataset.time || 0))}</small>`;
-      btn.addEventListener('click', () => updateScene(index, index >= current ? 1 : -1));
-      deckRailList.appendChild(btn);
-    });
-  }
-
   function renderMiniTimeline(){
     presenterMiniTimeline.innerHTML = '';
     const start = Math.max(0, current - 1);
@@ -325,13 +323,12 @@
   }
   function updateDemoIndicator(){
     if(!demoIndicator) return;
+    demoIndicator.hidden = false;
     if(!autoplayActive){
-      demoIndicator.hidden = true;
       demoIndicator.classList.remove('is-active');
       demoIndicator.textContent = t.demoOff;
       return;
     }
-    demoIndicator.hidden = false;
     demoIndicator.classList.add('is-active');
     demoIndicator.textContent = autoplayCountdown == null ? t.demoOn : `${t.demoOn} • ${formatTime(autoplayCountdown)}`;
   }
@@ -378,16 +375,6 @@
     const scene = scenes[current];
     progressBar.style.width = `${((current + 1) / scenes.length) * 100}%`;
     sceneLabel.textContent = `${String(current + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')} • ${scene.dataset.title}`;
-    if(chromeSceneTitle) chromeSceneTitle.textContent = scene.dataset.title;
-    if(chromeSceneMeta) chromeSceneMeta.textContent = `${String(current + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}`;
-    if(deckRailList){
-      [...deckRailList.children].forEach((btn, i) => {
-        btn.classList.toggle('is-active', i === current);
-        btn.setAttribute('aria-current', i === current ? 'step' : 'false');
-        if(i === current) btn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      });
-    }
-    document.body.dataset.scene = String(current);
     prevButton.disabled = current === 0;
     nextButton.disabled = current === scenes.length - 1;
     notesTitle.textContent = scene.dataset.title;
@@ -401,7 +388,7 @@
     presenterCurrentIndex.textContent = `${t.sceneWord} ${current + 1} ${t.ofWord} ${scenes.length}`;
     presenterNotesText.textContent = scene.dataset.notes || t.noNotes;
     presenterScriptText.textContent = contentData[current]?.script || scene.dataset.notes || t.noNotes;
-    presenterEvidenceText.textContent = contentData[current]?.summary || '';
+    presenterEvidenceText.textContent = typeof getSceneEvidenceText === 'function' ? getSceneEvidenceText(current) : (contentData[current]?.summary || '');
     presenterSceneTime.textContent = formatTime(Number(scene.dataset.time || 0));
     presenterTimer.textContent = timerButton.textContent;
     presenterNextTitle.textContent = scenes[current + 1] ? scenes[current + 1].dataset.title : '—';
@@ -409,23 +396,21 @@
     renderMiniTimeline();
     postPresenterState();
     queueFitActiveScene();
+    if(typeof activateSceneEntry === 'function') activateSceneEntry(current);
   }
   function updateScene(next, direction = 1){
     if(next < 0 || next >= scenes.length || next === current) return;
-    clearTimeout(sceneTransitionTimer);
     const old = scenes[current];
-    old.classList.remove('is-active', 'is-entering-back');
-    old.setAttribute('aria-hidden', 'true');
+    old.classList.remove('is-active');
+    old.classList.toggle('is-leaving', direction > 0);
     current = next;
-    const active = scenes[current];
-    active.classList.toggle('is-entering-back', direction < 0);
-    active.classList.add('is-active');
-    active.setAttribute('aria-hidden', 'false');
-    active.scrollTop = 0;
-    // Remove the directional helper after the entry animation, without
-    // leaving stale classes when navigation is rapid.
-    sceneTransitionTimer = setTimeout(() => active.classList.remove('is-entering-back'), 520);
+    scenes[current].classList.add('is-active');
+    setTimeout(() => old.classList.remove('is-leaving'), 450);
     updateChrome();
+    if(window.innerWidth <= 800){
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, left: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
   }
 
   prevButton.addEventListener('click', () => updateScene(current - 1, -1));
@@ -434,29 +419,20 @@
   presenterNext.addEventListener('click', () => updateScene(current + 1, 1));
   document.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => updateScene(current + 1, 1)));
 
-  function setOverlay(panel, open){
-    [notesPanel, presenterPanel, researchPanel].forEach(item => {
-      const shouldOpen = item === panel && open;
-      item.classList.toggle('is-open', shouldOpen);
-      item.setAttribute('aria-hidden', String(!shouldOpen));
-    });
-    document.body.classList.toggle('has-overlay', Boolean(open));
-    if(open){
-      const focusTarget = panel.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
-      requestAnimationFrame(() => focusTarget?.focus({ preventScroll: true }));
-    }
-  }
   function toggleNotes(force){
     const open = typeof force === 'boolean' ? force : !notesPanel.classList.contains('is-open');
-    setOverlay(notesPanel, open);
+    notesPanel.classList.toggle('is-open', open);
+    notesPanel.setAttribute('aria-hidden', String(!open));
   }
   function togglePresenter(force){
     const open = typeof force === 'boolean' ? force : !presenterPanel.classList.contains('is-open');
-    setOverlay(presenterPanel, open);
+    presenterPanel.classList.toggle('is-open', open);
+    presenterPanel.setAttribute('aria-hidden', String(!open));
   }
   function toggleResearch(force){
     const open = typeof force === 'boolean' ? force : !researchPanel.classList.contains('is-open');
-    setOverlay(researchPanel, open);
+    researchPanel.classList.toggle('is-open', open);
+    researchPanel.setAttribute('aria-hidden', String(!open));
     if(open) renderResearchDetails();
   }
   function openDualScreen(){
@@ -524,10 +500,8 @@
     updateDemoIndicator();
     presenterCountdown.textContent = finalMessage || '—';
     if(finalMessage){
-      demoIndicator.hidden = false;
       demoIndicator.textContent = finalMessage;
       demoIndicator.classList.remove('is-active');
-      setTimeout(() => { if(!autoplayActive) demoIndicator.hidden = true; }, 2400);
     }
     postPresenterState();
   }
@@ -598,24 +572,6 @@
     if(e.key === 'Escape'){ toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false); }
   });
 
-  // Horizontal swipe navigation on touch devices. Vertical scrolling wins
-  // whenever the gesture is primarily vertical, preventing accidental jumps.
-  const stage = document.getElementById('stage');
-  stage.addEventListener('touchstart', event => {
-    const touch = event.changedTouches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-  }, { passive: true });
-  stage.addEventListener('touchend', event => {
-    if(touchStartX == null || touchStartY == null) return;
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    touchStartX = touchStartY = null;
-    if(Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.35) return;
-    updateScene(current + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
-  }, { passive: true });
-
   // source figures dialog
   document.querySelectorAll('[data-open]').forEach(btn => btn.addEventListener('click', () => {
     const data = t.figureData[btn.dataset.open];
@@ -623,11 +579,10 @@
     dialogImage.src = data.src;
     dialogTitle.textContent = data.title;
     dialogDescription.textContent = data.desc;
-    if(typeof sourceDialog.showModal === 'function') sourceDialog.showModal();
-    else sourceDialog.setAttribute('open', '');
+    sourceDialog.showModal();
   }));
-  sourceDialog.querySelector('.dialog-close').addEventListener('click', () => typeof sourceDialog.close === 'function' ? sourceDialog.close() : sourceDialog.removeAttribute('open'));
-  sourceDialog.addEventListener('click', e => { if(e.target === sourceDialog){ if(typeof sourceDialog.close === 'function') sourceDialog.close(); else sourceDialog.removeAttribute('open'); } });
+  sourceDialog.querySelector('.dialog-close').addEventListener('click', () => sourceDialog.close());
+  sourceDialog.addEventListener('click', e => { if(e.target === sourceDialog) sourceDialog.close(); });
 
   // method comparison
   document.querySelectorAll('.compare-tab').forEach(tab => tab.addEventListener('click', () => {
@@ -655,27 +610,20 @@
   };
   let activeMetal = 'Cd';
   let expStep = 0;
-  let experimentMotionTimer = null;
   function experimentInstructions(){ return t.expSteps(metalInfo[activeMetal]); }
   function makeParticles(){
     particles.innerHTML = '';
-    // Seeded geometry keeps the visual reproducible across reset, language,
-    // device and recording sessions.
     for(let i = 0; i < 38; i++){
       const dot = document.createElement('i');
-      const x = 8 + ((i * 37) % 79);
-      const y = 15 + ((i * 53) % 70);
-      dot.style.left = `${x}%`;
-      dot.style.top = `${y}%`;
-      dot.style.animationDelay = `${-((i * 17) % 20) / 10}s`;
-      dot.style.setProperty('--left', `${15 + ((i * 29) % 69)}%`);
-      dot.style.setProperty('--settle', `${(i * 7) % 12}px`);
+      dot.style.left = `${8 + Math.random() * 80}%`;
+      dot.style.top = `${15 + Math.random() * 72}%`;
+      dot.style.animationDelay = `${-Math.random() * 2}s`;
+      dot.style.setProperty('--left', `${15 + Math.random() * 70}%`);
+      dot.style.setProperty('--settle', `${Math.random() * 12}px`);
       particles.appendChild(dot);
     }
   }
   function clearExperimentVisuals(){
-    clearTimeout(experimentMotionTimer);
-    experimentMotionTimer = null;
     sampleTube.classList.remove('is-shaking');
     externalMagnet.classList.remove('is-active');
     magneticProbe.className = 'magnetic-probe';
@@ -688,7 +636,7 @@
     clearExperimentVisuals();
     if(step >= 0){ particles.style.opacity = '1'; signalCaption.textContent = t.signalDispersed(activeMetal, metalInfo[activeMetal].pH); }
     else signalCaption.textContent = t.waitingSorbent(activeMetal);
-    if(step >= 1){ sampleTube.classList.add('is-shaking'); signalCaption.textContent = t.signalAdsorption; experimentMotionTimer = setTimeout(() => sampleTube.classList.remove('is-shaking'), 1300); }
+    if(step >= 1){ sampleTube.classList.add('is-shaking'); signalCaption.textContent = t.signalAdsorption; setTimeout(() => { if(expStep >= 2 || step >= 1) sampleTube.classList.remove('is-shaking'); }, 1300); }
     if(step >= 2){ sampleTube.classList.remove('is-shaking'); externalMagnet.classList.add('is-active'); particles.classList.add('is-settled'); signalCaption.textContent = t.signalGathered; }
     if(step >= 3){ magneticProbe.classList.add('is-lowered'); particles.style.opacity = '.15'; signalCaption.textContent = t.signalCollected; }
     if(step >= 4){
@@ -821,6 +769,415 @@
   animateColumnBars('#realSampleChart .sample-result-bar');
   selectSample(0);
 
+
+  // Enriched scene details, topic popups and robust icon labels
+  const uiWords = {
+    keyIdea: lang === 'th' ? 'สาระสำคัญของฉากนี้' : 'Key idea for this scene',
+    topicMenu: lang === 'th' ? 'หัวข้อย่อยกดเพื่ออ่านเพิ่ม' : 'Tap a topic for more depth',
+    topicOpen: lang === 'th' ? 'เปิดข้อมูลเพิ่มเติม' : 'Open detailed explanation',
+    topicSource: lang === 'th' ? 'แหล่งอ้างอิง' : 'Source',
+    caution: lang === 'th' ? 'ข้อควรระวังในการตีความ' : 'Interpretive caution',
+    summary: lang === 'th' ? 'สรุปภาพรวม' : 'Scene summary',
+    chapterImage: lang === 'th' ? 'ภาพประกอบหัวข้อนี้' : 'Topic illustration',
+    close: lang === 'th' ? 'ปิด' : 'Close',
+    scene: lang === 'th' ? 'ฉาก' : 'Scene',
+    topic: lang === 'th' ? 'หัวข้อ' : 'Topic',
+    moreInfo: lang === 'th' ? 'ข้อมูลเชิงลึก' : 'Deep dive',
+    theory: lang === 'th' ? 'เหตุผลตามทฤษฎี' : 'Theoretical basis'
+  };
+  const topicSceneImages = Array.from({ length: Math.max(contentData.length, 12) }, (_, i) => `assets/topic_${String(i + 1).padStart(2, '0')}.svg`);
+  const enrichmentRoot = window.SCENE_ENRICHMENT || {};
+  const sceneEnrichment = enrichmentRoot[lang] || [];
+  const figureRegistry = enrichmentRoot.figures || {};
+
+  function getSceneEvidenceText(index){
+    const base = contentData[index]?.summary || '';
+    const extra = sceneEnrichment[index] || {};
+    const facts = (extra.facts || []).map(f => `• ${f}`).join('\n');
+    const metrics = (extra.metrics || []).map(([label,value]) => `${label}: ${value}`).join('  |  ');
+    return [base, facts, metrics].filter(Boolean).join('\n\n');
+  }
+
+  function ensureTopicDialog(){
+    let dialog = document.getElementById('topicDetailDialog');
+    if(dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'topicDetailDialog';
+    dialog.className = 'topic-dialog';
+    dialog.innerHTML = `
+      <button class="ghost-button dialog-close" id="topicDialogClose" type="button">×</button>
+      <div class="topic-dialog-grid">
+        <div class="topic-dialog-image-wrap">
+          <div class="topic-dialog-kicker" id="topicDialogKicker">${uiWords.moreInfo}</div>
+          <img id="topicDialogImage" alt="${uiWords.chapterImage}" src="" />
+        </div>
+        <div class="topic-dialog-copy">
+          <span class="topic-dialog-scene" id="topicDialogScene"></span>
+          <h3 id="topicDialogTitle"></h3>
+          <p class="topic-dialog-summary" id="topicDialogSummary"></p>
+          <div class="topic-dialog-block"><span>${uiWords.theory}</span><p id="topicDialogBody"></p></div>
+          <div class="topic-dialog-block topic-dialog-caution"><span>${uiWords.caution}</span><p id="topicDialogCaution"></p></div>
+          <div class="topic-dialog-block"><span>${uiWords.topicSource}</span><p id="topicDialogSource"></p></div>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+    dialog.querySelector('#topicDialogClose').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', ev => {
+      const rect = dialog.getBoundingClientRect();
+      const within = rect.top <= ev.clientY && ev.clientY <= rect.top + rect.height && rect.left <= ev.clientX && ev.clientX <= rect.left + rect.width;
+      if(!within) dialog.close();
+    });
+    return dialog;
+  }
+
+  function renderSceneTopicPanels(){
+    scenes.forEach((scene, sceneIndex) => {
+      const data = contentData[sceneIndex];
+      if(!data || scene.querySelector('.scene-topic-panel')) return;
+      const panel = document.createElement('section');
+      panel.className = 'scene-topic-panel';
+      const chips = (data.sections || []).map((sec, topicIndex) => `
+        <button class="topic-chip" type="button" data-scene-topic-open="1" data-scene-index="${sceneIndex}" data-topic-index="${topicIndex}" aria-label="${uiWords.topicOpen}: ${sec.title}">
+          <b>${String(topicIndex + 1).padStart(2, '0')}</b>
+          <span>${sec.title}</span>
+        </button>`).join('');
+      panel.innerHTML = `
+        <div class="scene-summary-card">
+          <span>${uiWords.keyIdea}</span>
+          <p>${data.summary}</p>
+        </div>
+        <div class="scene-topic-list-wrap">
+          <div class="scene-topic-list-head">
+            <span>${uiWords.topicMenu}</span>
+            <small>${uiWords.scene} ${String(sceneIndex + 1).padStart(2, '0')}</small>
+          </div>
+          <div class="scene-topic-list">${chips}</div>
+        </div>`;
+      if(scene.classList.contains('scene-opening')){
+        const anchor = scene.querySelector('.opening-question') || scene.lastElementChild;
+        anchor.insertAdjacentElement('beforebegin', panel);
+      } else if(scene.classList.contains('scene-qa')) {
+        const anchor = scene.querySelector('.qa-grid') || scene.lastElementChild;
+        anchor.insertAdjacentElement('beforebegin', panel);
+      } else {
+        const heading = scene.querySelector('.section-heading');
+        if(heading) heading.insertAdjacentElement('afterend', panel);
+        else scene.insertAdjacentElement('afterbegin', panel);
+      }
+    });
+  }
+
+  function openTopicDialog(sceneIndex, topicIndex){
+    const data = contentData[sceneIndex];
+    if(!data || !data.sections || !data.sections[topicIndex]) return;
+    toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false);
+    const dialog = ensureTopicDialog();
+    const section = data.sections[topicIndex];
+    const img = topicSceneImages[sceneIndex] || topicSceneImages[0];
+    dialog.querySelector('#topicDialogImage').src = img;
+    dialog.querySelector('#topicDialogImage').alt = `${data.summary}`;
+    dialog.querySelector('#topicDialogScene').textContent = `${uiWords.scene} ${String(sceneIndex + 1).padStart(2, '0')} • ${scenes[sceneIndex]?.dataset.title || ''}`;
+    dialog.querySelector('#topicDialogTitle').textContent = `${String(topicIndex + 1).padStart(2, '0')} — ${section.title}`;
+    dialog.querySelector('#topicDialogSummary').textContent = data.summary || '';
+    dialog.querySelector('#topicDialogBody').textContent = section.body || '';
+    dialog.querySelector('#topicDialogCaution').textContent = data.caution || '—';
+    dialog.querySelector('#topicDialogSource').textContent = data.source || '—';
+    if(!dialog.open) dialog.showModal();
+  }
+
+  document.addEventListener('click', ev => {
+    const chip = ev.target.closest('[data-scene-topic-open]');
+    if(!chip) return;
+    openTopicDialog(Number(chip.dataset.sceneIndex), Number(chip.dataset.topicIndex));
+  });
+
+  function reinforceCompactIcons(){
+    const labels = ['TIME', 'PEAK', 'ECO', 'MASS'];
+    document.querySelectorAll('.efficiency-grid .eff-icon').forEach((el, i) => { el.textContent = labels[i] || 'INFO'; });
+    document.querySelectorAll('.sample-summary article, .efficiency-grid article').forEach(card => {
+      if(card.querySelector('.data-accent')) return;
+      const accent = document.createElement('i');
+      accent.className = 'data-accent';
+      card.prepend(accent);
+    });
+  }
+
+  function addTheoryCaptions(){
+    const synthesisVisual = document.getElementById('synthesisVisual');
+    if(synthesisVisual && !document.getElementById('synthesisCaption')){
+      const captions = {
+        wash: lang === 'th' ? 'ล้างและอบเปลือกส้มเพื่อลดความชื้นและเตรียมหมู่ฟังก์ชันบนชีวมวล' : 'Washing and drying stabilize the biomass and prepare oxygen-rich binding groups.',
+        grind: lang === 'th' ? 'บดและร่อนให้ขนาดอนุภาคสม่ำเสมอ เพิ่มพื้นที่ผิวให้การดูดซับสม่ำเสมอขึ้น' : 'Grinding and sieving increase accessible surface area and improve extraction consistency.',
+        magnetize: lang === 'th' ? 'เกิด Fe₃O₄ บนชีวมวลด้วย co-precipitation ทำให้อนุภาคถูกแยกด้วยแม่เหล็กได้' : 'Fe₃O₄ is formed by co-precipitation, enabling magnetic recovery of the biosorbent.',
+        separate: lang === 'th' ? 'ล้าง คืนสภาพ และแยกด้วยแม่เหล็กเพื่อให้ได้ M-OPP พร้อมใช้งาน' : 'Magnetic recovery, washing and drying yield the final M-OPP sorbent ready for use.'
+      };
+      const cap = document.createElement('p');
+      cap.id = 'synthesisCaption';
+      cap.className = 'theory-caption';
+      synthesisVisual.insertAdjacentElement('afterend', cap);
+      const update = () => {
+        const active = document.querySelector('.synthesis-step.is-active');
+        cap.textContent = captions[active?.dataset.synthesis || 'wash'];
+      };
+      document.querySelectorAll('.synthesis-step').forEach(btn => btn.addEventListener('click', update));
+      update();
+    }
+
+    const methodVerdict = document.querySelector('.difference-verdict');
+    if(methodVerdict && !methodVerdict.nextElementSibling?.classList?.contains('theory-caption')){
+      const cap = document.createElement('p');
+      cap.className = 'theory-caption';
+      cap.textContent = lang === 'th'
+        ? 'ตามทฤษฎี DMSS-FAAS เพิ่มความไวเพราะโลหะจากตัวอย่าง 30 mL ถูกรวมอยู่บน M-OPP เพียง 3 mg แล้วส่งเข้าเปลวไฟโดยตรง จึงลดการสูญเสียในระบบ nebulizer.'
+        : 'Theoretically, DMSS-FAAS increases sensitivity because analyte from 30 mL of sample is concentrated onto only 3 mg of M-OPP and delivered directly to the flame, bypassing nebulizer losses.';
+      methodVerdict.insertAdjacentElement('afterend', cap);
+    }
+  }
+
+
+  function ensurePaperEvidenceDialog(){
+    let dialog = document.getElementById('paperEvidenceDialog');
+    if(dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'paperEvidenceDialog';
+    dialog.className = 'paper-evidence-dialog';
+    dialog.innerHTML = `
+      <button class="ghost-button dialog-close" id="paperEvidenceClose" type="button">×</button>
+      <div class="paper-evidence-layout">
+        <div class="paper-evidence-media"><img id="paperEvidenceImage" alt="" src="" /></div>
+        <div class="paper-evidence-copy">
+          <span>${lang === 'th' ? 'ภาพจากบทความต้นฉบับ' : 'ORIGINAL PAPER EVIDENCE'}</span>
+          <h3 id="paperEvidenceTitle"></h3>
+          <p id="paperEvidenceDescription"></p>
+          <div class="paper-evidence-note"><b>${lang === 'th' ? 'ใช้ภาพนี้อธิบายอะไร' : 'How to explain this figure'}</b><p id="paperEvidenceTeaching"></p></div>
+          <small>Rosa et al., Food Chemistry 487 (2025) 144709</small>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+    dialog.querySelector('#paperEvidenceClose').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', ev => {
+      const rect = dialog.getBoundingClientRect();
+      if(ev.clientX < rect.left || ev.clientX > rect.right || ev.clientY < rect.top || ev.clientY > rect.bottom) dialog.close();
+    });
+    return dialog;
+  }
+
+  function figureTeachingText(key){
+    const map = lang === 'th' ? {
+      workflow_full:'ใช้ชี้ให้เห็นว่าการสกัด การแยก และการนำตัวอย่างเข้าเปลวไฟเป็นกระบวนการต่อเนื่องเดียวกัน',
+      fig1A:'เน้นปริมาตรตัวอย่าง 30 mL, M-OPP 3 mg และการเขย่าเพื่อให้ไอออนสัมผัสตำแหน่งจับ',
+      fig1B:'เน้นว่าการแยกอนุภาคใช้แรงแม่เหล็ก ไม่ต้องกรองหรือปั่นเหวี่ยง',
+      fig1C:'อธิบายว่า probe ทำหน้าที่เก็บเฟสของแข็งที่มีโลหะเข้มข้นอยู่แล้ว',
+      fig1D:'อธิบายการถ่ายโอน analyte โดยไม่ต้องชะกลับเป็นสารละลาย',
+      fig1E:'ชี้เส้นทางลำแสง เปลวไฟ และ transient peak ที่เกิดจากการเผา M-OPP',
+      char_full:'ใช้สรุปว่าผู้วิจัยยืนยันวัสดุด้วยหลักฐานหลายชนิด ไม่ได้ใช้ FTIR เพียงอย่างเดียว',
+      fig2A:'ชี้แถบ Fe–O และหมู่ O–H / C=O ที่เกี่ยวข้องกับการสร้างวัสดุและการจับโลหะ',
+      fig2B:'เชื่อมประจุพื้นผิวลบกับการดึงดูดไอออน Cd²⁺ และ Pb²⁺ พร้อมอธิบายผลของ pH',
+      fig2C:'เปรียบเทียบมวลคงเหลือเพื่อแสดงส่วน Fe₃O₄ ในวัสดุไฮบริด',
+      fig2D:'แสดงการสลายตัวของชีวมวลดิบและใช้เป็นฐานเปรียบเทียบกับ M-OPP',
+      fig2E:'แสดงว่า M-OPP มีพฤติกรรมความร้อนต่างจาก OPP เพราะมี Fe₃O₄ และปฏิสัมพันธ์ในวัสดุ',
+      fig2F:'ใช้ยืนยันว่า Fe₃O₄ เป็นองค์ประกอบที่เสถียรกว่าในช่วงอุณหภูมิสูง',
+      micro_full:'เปรียบเทียบ OPP, M-OPP และ Fe₃O₄ ทั้ง TEM และ SEM ในภาพเดียว',
+      fig3A:'ชี้โครงสร้างเส้นใยของ OPP ก่อนการทำให้เป็นแม่เหล็ก',
+      fig3B:'ชี้กลุ่มอนุภาคนาโนที่เกาะบนชีวมวลหลังสร้าง M-OPP',
+      fig3C:'แสดงลักษณะการรวมกลุ่มของ Fe₃O₄ บริสุทธิ์เพื่อใช้เทียบกับ M-OPP',
+      fig3D:'ชี้พื้นผิวขรุขระของอนุภาค OPP ดิบ',
+      fig3E:'ชี้ความไม่สม่ำเสมอและอนุภาคที่เพิ่มขึ้นบน M-OPP',
+      fig3F:'ใช้เทียบรูปร่างอนุภาค Fe₃O₄ กับวัสดุไฮบริด'
+    } : {
+      workflow_full:'Use it to show that extraction, magnetic separation and direct flame introduction form one continuous analytical workflow.',
+      fig1A:'Emphasize 30 mL sample, 3 mg M-OPP and agitation that brings ions into contact with binding sites.',
+      fig1B:'Emphasize that particles are separated magnetically without filtration or centrifugation.',
+      fig1C:'Explain that the probe collects a solid phase already enriched with analyte.',
+      fig1D:'Explain analyte transfer without a liquid elution step.',
+      fig1E:'Point to the optical beam, flame and transient peak produced as M-OPP burns.',
+      char_full:'Use it to show that material verification relied on multiple independent techniques, not FTIR alone.',
+      fig2A:'Point to Fe–O and oxygen-containing bands associated with magnetization and metal binding.',
+      fig2B:'Connect negative surface charge with attraction of Cd²⁺ and Pb²⁺ and explain the pH effect.',
+      fig2C:'Compare residual mass to demonstrate the inorganic Fe₃O₄ fraction in the hybrid.',
+      fig2D:'Show raw biomass decomposition as the baseline for comparison with M-OPP.',
+      fig2E:'Show that M-OPP has altered thermal behavior due to Fe₃O₄ and hybrid interactions.',
+      fig2F:'Use it to confirm that Fe₃O₄ is the more thermally stable component.',
+      micro_full:'Compare OPP, M-OPP and Fe₃O₄ using both TEM and SEM in a single figure.',
+      fig3A:'Point to the fibrous structure of OPP before magnetization.',
+      fig3B:'Point to nanoparticle aggregates deposited on the biomass after M-OPP synthesis.',
+      fig3C:'Show aggregation of pure Fe₃O₄ as a reference for the hybrid material.',
+      fig3D:'Point to the rough irregular surface of raw OPP.',
+      fig3E:'Point to the heterogeneous processed particles in M-OPP.',
+      fig3F:'Compare the compact angular Fe₃O₄ particles with the hybrid.'
+    };
+    return map[key] || '';
+  }
+
+  function openPaperEvidence(key){
+    const fig = figureRegistry[key];
+    if(!fig) return;
+    const topicDialog = document.getElementById('topicDetailDialog');
+    if(topicDialog?.open) topicDialog.close();
+    if(sourceDialog?.open) sourceDialog.close();
+    toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false);
+    const dialog = ensurePaperEvidenceDialog();
+    const copy = fig[lang] || fig.en;
+    dialog.querySelector('#paperEvidenceImage').src = fig.src;
+    dialog.querySelector('#paperEvidenceImage').alt = copy.title;
+    dialog.querySelector('#paperEvidenceTitle').textContent = copy.title;
+    dialog.querySelector('#paperEvidenceDescription').textContent = copy.desc;
+    dialog.querySelector('#paperEvidenceTeaching').textContent = figureTeachingText(key);
+    if(!dialog.open) dialog.showModal();
+  }
+
+  function renderDenseSceneEnrichment(){
+    scenes.forEach((scene, sceneIndex) => {
+      const extra = sceneEnrichment[sceneIndex];
+      if(!extra || scene.querySelector('.dense-scene-enrichment')) return;
+      const wrap = document.createElement('section');
+      wrap.className = 'dense-scene-enrichment';
+      const metrics = (extra.metrics || []).map(([label,value]) => `<article><span>${label}</span><b>${value}</b></article>`).join('');
+      const facts = (extra.facts || []).map((fact,i) => `<li><b>${String(i+1).padStart(2,'0')}</b><span>${fact}</span></li>`).join('');
+      const figures = (extra.images || []).map(key => {
+        const fig = figureRegistry[key]; if(!fig) return '';
+        const copy = fig[lang] || fig.en;
+        return `<button class="paper-thumb" type="button" data-paper-key="${key}"><img src="${fig.src}" alt="${copy.title}" loading="lazy"><span>${copy.title}</span></button>`;
+      }).join('');
+      wrap.innerHTML = `
+        <div class="dense-metrics">${metrics}</div>
+        <div class="dense-detail-grid">
+          <div class="dense-facts"><div class="dense-block-title"><span>${lang === 'th' ? 'รายละเอียดสำคัญ' : 'DETAILED TAKEAWAYS'}</span><small>${lang === 'th' ? 'ใช้พูดอธิบายเพิ่มเติม' : 'speaker-ready depth'}</small></div><ol>${facts}</ol></div>
+          <div class="paper-gallery"><div class="dense-block-title"><span>${lang === 'th' ? 'หลักฐานจากรูปใน paper' : 'PAPER FIGURE EVIDENCE'}</span><small>${lang === 'th' ? 'กดภาพเพื่อขยาย' : 'tap to enlarge'}</small></div><div class="paper-thumb-grid">${figures}</div></div>
+        </div>`;
+      const topicPanel = scene.querySelector('.scene-topic-panel');
+      if(topicPanel) topicPanel.insertAdjacentElement('afterend', wrap);
+      else scene.appendChild(wrap);
+    });
+  }
+
+  document.addEventListener('click', ev => {
+    const button = ev.target.closest('[data-paper-key]');
+    if(button) openPaperEvidence(button.dataset.paperKey);
+  });
+
+  function upgradeTopicDialog(sceneIndex){
+    const dialog = ensureTopicDialog();
+    if(!dialog.querySelector('.topic-extra-panel')){
+      const extraPanel = document.createElement('div');
+      extraPanel.className = 'topic-extra-panel';
+      extraPanel.innerHTML = `<div class="topic-extra-facts"><span>${lang === 'th' ? 'ประเด็นเพิ่มเติม' : 'Additional evidence'}</span><ul id="topicDialogFacts"></ul></div><div class="topic-extra-metrics" id="topicDialogMetrics"></div><div class="topic-dialog-paper" id="topicDialogPaper"></div>`;
+      dialog.querySelector('.topic-dialog-copy').appendChild(extraPanel);
+    }
+    const extra = sceneEnrichment[sceneIndex] || {};
+    dialog.querySelector('#topicDialogFacts').innerHTML = (extra.facts || []).map(f => `<li>${f}</li>`).join('');
+    dialog.querySelector('#topicDialogMetrics').innerHTML = (extra.metrics || []).map(([l,v]) => `<article><span>${l}</span><b>${v}</b></article>`).join('');
+    dialog.querySelector('#topicDialogPaper').innerHTML = (extra.images || []).slice(0,3).map(key => {
+      const fig=figureRegistry[key]; if(!fig) return ''; const c=fig[lang]||fig.en;
+      return `<button type="button" data-paper-key="${key}"><img src="${fig.src}" alt="${c.title}"><span>${c.title}</span></button>`;
+    }).join('');
+  }
+
+  const originalOpenTopicDialog = openTopicDialog;
+  openTopicDialog = function(sceneIndex, topicIndex){
+    originalOpenTopicDialog(sceneIndex, topicIndex);
+    upgradeTopicDialog(sceneIndex);
+  };
+
+  let sceneAnimationTimers = [];
+  function clearSceneAnimationTimers(){ sceneAnimationTimers.forEach(clearTimeout); sceneAnimationTimers = []; }
+  function scheduleSceneAction(fn, delay){ sceneAnimationTimers.push(setTimeout(fn, delay)); }
+  function pulseElements(elements, interval=420){
+    elements.forEach((el,i) => scheduleSceneAction(() => {
+      elements.forEach(node => node.classList.remove('scene-focus'));
+      el.classList.add('scene-focus');
+    }, i*interval));
+    scheduleSceneAction(() => elements.forEach(node => node.classList.remove('scene-focus')), elements.length*interval+500);
+  }
+
+  function playSceneAnimation(sceneIndex){
+    clearSceneAnimationTimers();
+    const scene = scenes[sceneIndex];
+    if(!scene) return;
+    scene.classList.remove('scene-playback'); void scene.offsetWidth; scene.classList.add('scene-playback');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const unit = reduced ? 80 : 650;
+    if(sceneIndex === 0){
+      scheduleSceneAction(() => scene.classList.add('opening-capture'), 100);
+      scheduleSceneAction(() => scene.classList.add('opening-signal'), unit*3);
+      scheduleSceneAction(() => scene.classList.remove('opening-capture','opening-signal','scene-playback'), unit*6);
+    } else if(sceneIndex === 1){
+      pulseElements([...scene.querySelectorAll('.goal-card')], unit*.72);
+    } else if(sceneIndex === 2){
+      const tabs=[...scene.querySelectorAll('.compare-tab')];
+      if(tabs[0]) tabs[0].click();
+      scheduleSceneAction(() => tabs[1]?.click(), unit*3);
+      scheduleSceneAction(() => scene.classList.remove('scene-playback'), unit*6);
+    } else if(sceneIndex === 3){
+      resetExperiment();
+      [0,1,2,3,4].forEach((step,i)=>scheduleSceneAction(()=>performExperimentStep(step), 200+i*unit*1.55));
+      scheduleSceneAction(()=>scene.classList.remove('scene-playback'), unit*9);
+    } else if(sceneIndex === 4){
+      const steps=[...scene.querySelectorAll('.synthesis-step')];
+      steps.forEach((btn,i)=>scheduleSceneAction(()=>btn.click(), i*unit*1.35));
+      scheduleSceneAction(()=>scene.classList.remove('scene-playback'), unit*6);
+    } else if(sceneIndex === 5){
+      volumeRange.value=5; massRange.value=.5; timeRange.value=3; predictAbs();
+      for(let i=1;i<=10;i++) scheduleSceneAction(()=>{
+        volumeRange.value=(5+(25*i/10)).toFixed(0); massRange.value=(.5+(2.5*i/10)).toFixed(1); timeRange.value=(3+(22*i/10)).toFixed(0); predictAbs();
+      },i*unit*.38);
+      scheduleSceneAction(()=>scene.classList.remove('scene-playback'), unit*5);
+    } else if(sceneIndex === 6){
+      const buttons=[...scene.querySelectorAll('.adsorb-button')];
+      buttons[0]?.click(); scheduleSceneAction(()=>buttons[1]?.click(),unit*3); scheduleSceneAction(()=>scene.classList.remove('scene-playback'),unit*6);
+    } else if(sceneIndex === 7){
+      const buttons=[...scene.querySelectorAll('.gain-button')];
+      buttons[0]?.click(); scheduleSceneAction(()=>buttons[1]?.click(),unit*3); scheduleSceneAction(()=>scene.classList.remove('scene-playback'),unit*6);
+    } else if(sceneIndex === 8){
+      pulseElements([...scene.querySelectorAll('.validation-dashboard article, .evidence-ladder li')], unit*.5);
+    } else if(sceneIndex === 9){
+      samples.forEach((_,i)=>scheduleSceneAction(()=>selectSample(i),i*unit*.85));
+      scheduleSceneAction(()=>scene.classList.remove('scene-playback'),unit*6);
+    } else if(sceneIndex === 10){
+      pulseElements([...scene.querySelectorAll('.scope-in, .scope-out, .reporting-note')], unit*1.2);
+    } else if(sceneIndex === 11){
+      pulseElements([...scene.querySelectorAll('.answer-grid article, .cycle-item')], unit*.55);
+    } else {
+      const details=[...scene.querySelectorAll('.qa-grid details')];
+      details.forEach((d,i)=>scheduleSceneAction(()=>{ details.forEach(x=>x.open=false); d.open=true; },i*unit));
+      scheduleSceneAction(()=>scene.classList.remove('scene-playback'),details.length*unit+400);
+    }
+  }
+
+  function addSceneAnimationControls(){
+    scenes.forEach((scene,i)=>{
+      if(scene.querySelector('.scene-animation-button')) return;
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='small-button scene-animation-button';
+      btn.innerHTML=`<span aria-hidden="true">▶</span> ${lang === 'th' ? 'เล่นอนิเมชันอธิบาย' : 'Play explanation'}`;
+      btn.addEventListener('click',()=>playSceneAnimation(i));
+      const heading=scene.querySelector('.section-heading');
+      if(heading) heading.appendChild(btn);
+      else {
+        const actions=scene.querySelector('.hero-actions') || scene.querySelector('.conclusion-next');
+        if(actions?.classList?.contains('hero-actions')) actions.appendChild(btn); else if(actions) actions.insertAdjacentElement('beforebegin',btn); else scene.prepend(btn);
+      }
+    });
+  }
+
+  function activateSceneEntry(sceneIndex){
+    clearSceneAnimationTimers();
+    scenes.forEach((s,i)=>{
+      s.classList.toggle('scene-enter-active',i===sceneIndex);
+      if(i!==sceneIndex) s.classList.remove('scene-playback','opening-capture','opening-signal');
+    });
+    const scene=scenes[sceneIndex];
+    if(!scene) return;
+    scene.querySelectorAll('.bar-column i,.sample-result-bar i').forEach(bar=>{
+      const target=bar.dataset.targetHeight || bar.style.height; bar.style.height='0%'; requestAnimationFrame(()=>bar.style.height=target);
+    });
+  }
+
+  renderSceneTopicPanels();
+  renderDenseSceneEnrichment();
+  reinforceCompactIcons();
+  addTheoryCaptions();
+  addSceneAnimationControls();
   // Install prompt
   const installToast = document.getElementById('installToast');
   const installButton = document.getElementById('installButton');
@@ -852,8 +1209,6 @@
   setNotesMode('quick');
   setPresenterReadingMode('script');
   buildPresenterSceneList();
-  buildDeckRail();
-  scenes.forEach((scene, index) => scene.setAttribute('aria-hidden', String(index !== current)));
   updateAutoplayButtons();
   updateChrome();
   renderTimer();
