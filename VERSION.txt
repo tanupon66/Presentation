@@ -1,14 +1,14 @@
-Version: 2.0.0
-Release type: Full application architecture and UI rebuild
+Version: 2.3.0
+Release type: Responsive UI repair + compact topic dialog system
 
 Highlights:
-- Replaced the old zoom-based responsive logic with a viewport-safe app shell
-- Added a desktop chapter rail and synchronized current-scene chrome
-- Rebuilt all scene layouts, cards, charts, controls, overlays, and presenter views
-- Added isolated per-scene scrolling so content never sits under the header or footer
-- Added compact portrait and landscape layouts without hiding scientific content
-- Refactored overlays so Notes, Presenter, and Research panels cannot overlap
-- Added deterministic experiment particles and cancel-safe animation timers
-- Added touch swipe navigation with vertical-scroll protection
-- Improved keyboard focus, ARIA state, reduced-motion support, and dialog fallback
-- Updated the PWA cache and manifest to v2.0.0
+- Removed the large inline topic and dense-evidence panels that distorted slide layouts
+- Added one compact, horizontally scrollable topic toolbar to every scene
+- Topic details now open only after a topic is tapped
+- Rebuilt topic dialogs as desktop modal, mobile bottom sheet, and full-height landscape dialog
+- Linked available topics to real cropped figures from the paper
+- Preserved detailed facts and metrics inside a collapsed Additional evidence section
+- Kept deterministic animation controls for all 13 scenes
+- Removed CSS zoom-based scene fitting and replaced it with normal scrolling and viewport-safe layouts
+- Replaced unreliable Unicode utility icons with inline SVG icons
+- Updated PWA cache and asset versions to v2.3.0

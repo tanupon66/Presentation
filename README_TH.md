@@ -1,38 +1,78 @@
-# DMSS-FAAS Interactive Presentation v2.0.0
+# DMSS-FAAS Interactive Research Story v2.3.0
 
-เว็บแอปนำเสนองานวิจัยการตรวจ Cd และ Pb ในชาและกาแฟด้วย DMSS-FAAS เวอร์ชันนี้เป็นการรีโครงสร้างตัวโปรแกรมและออกแบบ UI ใหม่ทั้งหมด โดยคงเนื้อหาเชิงวิชาการ สคริปต์ผู้นำเสนอ ภาษาไทย/อังกฤษ การทดลองเสมือน โหมดเดโม และ Presenter แบบสองจอจากเวอร์ชันเดิมไว้
+เว็บไซต์นำเสนอแบบ Interactive สำหรับอธิบายงานวิจัยการตรวจ Cd และ Pb ในชาและกาแฟด้วย DMSS-FAAS รองรับภาษาอังกฤษ/ไทย, Presenter Mode, Dual-screen, PWA Offline และการนำเสนอจากโทรศัพท์
 
-## จุดสำคัญของ v2.0.0
+## ไฟล์หลัก
 
-- เปลี่ยนจากการย่อหน้าเว็บด้วย `zoom` เป็น app shell ที่แบ่งพื้นที่ Top bar, Chapter rail, Stage และ Navigation ชัดเจน
-- แต่ละฉากเลื่อนภายในพื้นที่ของตนเอง จึงไม่ซ้อนใต้ส่วนหัวหรือปุ่มควบคุม
-- ออกแบบใหม่ครบทุกฉาก การ์ด กราฟ แผงควบคุม dialog และหน้าผู้นำเสนอ
-- รองรับ Desktop, Tablet, Mobile portrait และ Mobile landscape โดยไม่ตัดเนื้อหาวิชาการ
-- เพิ่ม Chapter rail บนจอใหญ่ และ command sheet บนมือถือ
-- Notes, Research details และ Presenter overlay เปิดได้ทีละส่วน ไม่ซ้อนกัน
-- ปรับ experiment animation ให้ deterministic และยกเลิก timer เก่าเมื่อ reset หรือเปลี่ยนสถานะ
-- รองรับ swipe ซ้าย/ขวาโดยไม่รบกวนการเลื่อนแนวตั้ง
-- รองรับ `prefers-reduced-motion`, keyboard focus และ ARIA state
-- อัปเดต PWA manifest และ offline cache เป็น v2.0.0
+- `index.html` — เวอร์ชันภาษาอังกฤษ
+- `index_th.html` — เวอร์ชันภาษาไทย
+- `presenter.html` — หน้าจอ Presenter แยกจอ
+- `styles.css` — UI, responsive และ animation
+- `app.js` — ระบบนำเสนอและ interactive experiment
+- `research_content.js` — เนื้อหาเชิงลึกและสคริปต์ครบทุกฉาก
+- `scene_enrichment.js` — fact cards, metrics และแผนที่ภาพจาก paper
+- `assets/paper_crops/` — ภาพย่อยที่ครอปจาก Fig. 1–3 ของบทความต้นฉบับ
+- `sw.js` และ `manifest.webmanifest` — PWA/Offline
 
-## วิธีเปิดใช้งาน
+## จุดเปลี่ยนสำคัญใน v2.3.0
 
-### Deploy บน Cloudflare Pages / GitHub Pages / Static Hosting
+### 1. หน้าสไลด์กลับมาสะอาดและไม่ถูกเนื้อหาเสริมดันจนพัง
+
+- นำ panel ขนาดใหญ่ที่ถูกแทรกลงในทุกฉากออกทั้งหมด
+- ไม่แสดง facts, metrics หรือ gallery ยาว ๆ บนหน้าสไลด์โดยตรง
+- แต่ละฉากมีเพียงแถบหัวข้อขนาดเล็ก 3 หัวข้อ และปุ่มเล่นคำอธิบาย
+- บนมือถือ แถบหัวข้อเลื่อนแนวนอนได้โดยไม่ทำให้ document ล้นจอ
+
+### 2. หัวข้อกดได้และเปิดข้อมูลเฉพาะเมื่อผู้ใช้ต้องการ
+
+เมื่อกดหัวข้อ จะเปิดหน้าต่างรายละเอียดที่ประกอบด้วย:
+
+- ภาพรวมของฉาก
+- คำอธิบายเชิงวิชาการของหัวข้อนั้น
+- ข้อควรระวังในการตีความ
+- ตำแหน่งอ้างอิงในบทความ
+- Additional evidence แบบพับเก็บได้
+- ภาพจริงจาก paper เฉพาะหัวข้อที่มีหลักฐานภาพรองรับ
+
+Popup ถูกออกแบบแยกตามอุปกรณ์:
+
+- Desktop: modal สองคอลัมน์ ภาพและเนื้อหาอยู่คนละส่วน
+- Tablet: modal คอลัมน์เดียวที่อ่านได้เต็มพื้นที่
+- Mobile portrait: bottom sheet ที่มี header และปุ่มปิดชัดเจน
+- Mobile landscape: dialog เต็มจอ ภาพอยู่ด้านซ้ายและข้อความอยู่ด้านขวา
+
+### 3. ภาพจริงจาก paper
+
+มีภาพหลักและภาพครอปจากบทความรวม 20 รายการ:
+
+- Fig. 1 แบบเต็ม และ Fig. 1A–1E
+- Fig. 2 แบบเต็ม และ Fig. 2A–2F
+- Fig. 3 แบบเต็ม และ Fig. 3A–3F
+
+กดภาพใน popup เพื่อเปิด Paper Evidence Viewer พร้อมคำอธิบายว่าควรใช้ภาพนั้นอธิบายประเด็นใด
+
+### 4. Animation รายฉาก
+
+ทุกฉากมีปุ่ม `Play explanation / เล่นคำอธิบาย` และยังคงลำดับ animation เดิมครบ 13 ฉาก เช่น การจับ Cd/Pb, ขั้นตอน DMSS-FAAS, การสร้าง M-OPP, DOE optimization, adsorption, validation และ real samples
+
+Animation จะหยุดและล้าง timer เมื่อเปลี่ยนฉาก เพื่อไม่ให้ animation ของฉากเก่าทำงานซ้อนกับฉากใหม่
+
+### 5. Responsive และการแก้บัคหน้าจอ
+
+- ยกเลิกการย่อหน้าด้วย CSS `zoom`
+- ใช้การเลื่อนภายในฉากแทนการบีบองค์ประกอบ
+- จำกัดความกว้างของ hero, toolbar, dialog และรูปภาพไม่ให้เกิน viewport
+- ปรับ Virtual Experiment บนมือถือให้ FAAS, beam และ signal monitor ไม่ดันหน้าจอล้น
+- ย้ายปุ่มเมนูบนจอเล็กมากให้ไม่ทับแถบหัวข้อ
+- เปลี่ยนไอคอนที่เสี่ยงแสดงเป็นสี่เหลี่ยมหรืออักขระผิดเป็น SVG
+
+## วิธีใช้งาน
 
 1. แตกไฟล์ ZIP
-2. อัปโหลดไฟล์และโฟลเดอร์ทั้งหมด โดยให้ `index.html` อยู่ที่ root ของเว็บไซต์
-3. ไม่ต้องใช้ Build command และไม่ต้องใช้ Node.js server
-4. เปิด `index.html` สำหรับภาษาอังกฤษ หรือ `index_th.html` สำหรับภาษาไทย
+2. อัปโหลดไฟล์และโฟลเดอร์ทั้งหมดขึ้น GitHub Pages, Cloudflare Pages หรือ Static Hosting
+3. เปิด `index.html` หรือ `index_th.html`
 
-ค่าที่แนะนำสำหรับ Cloudflare Pages:
-
-- Framework preset: `None`
-- Build command: เว้นว่าง
-- Build output directory: `/` หรือโฟลเดอร์ที่มี `index.html`
-
-### ทดสอบบนเครื่อง
-
-Service Worker ต้องทำงานผ่าน HTTP/HTTPS ไม่ควรดับเบิลคลิกไฟล์โดยตรงเมื่อต้องการทดสอบ PWA หรือ Offline
+การทดสอบ PWA/Offline ต้องเปิดผ่าน HTTP/HTTPS ไม่ควรดับเบิลคลิกไฟล์โดยตรง
 
 ```bash
 python -m http.server 8080
@@ -40,60 +80,40 @@ python -m http.server 8080
 
 จากนั้นเปิด `http://localhost:8080`
 
-## การควบคุม
+## ปุ่มควบคุม
 
-- `←` / `→` หรือ Space: เปลี่ยนฉาก
-- `N`: เปิด/ปิด Notes
-- `E`: เปิด/ปิด Research details
-- `P`: เปิด/ปิด Presenter overlay
-- `G`: เปิด Dual-screen Presenter View
-- `D`: เปิด/ปิด Auto demo
-- `F`: Fullscreen
-- `R`: รีเซ็ตตัวจับเวลา 15 นาที
-- แตะตัวจับเวลา: เริ่ม/หยุดเวลา
-- มือถือ: ใช้ปุ่มเมนูลอยเพื่อเปิดคำสั่งทั้งหมด
+- ลูกศรซ้าย/ขวา หรือ Space — เปลี่ยนฉาก
+- N — Notes
+- E — Research Details
+- P — Presenter Mode
+- G — Dual-screen Presenter
+- D — Auto Demo
+- F — Fullscreen
+- R — รีเซ็ตเวลา 15 นาที
+- กดเวลามุมขวาบน — เริ่ม/หยุดจับเวลา
 
-## Presenter แบบสองจอ
+## Deploy บน GitHub Pages
 
-1. เปิดหน้าหลักบนจอที่ใช้ฉาย
-2. กด `Dual` หรือปุ่ม `G`
-3. ย้ายหน้าต่าง Presenter ไปยังจอของผู้พูด
-4. หน้าผู้นำเสนอจะแสดงฉากปัจจุบัน ฉากถัดไป สคริปต์ โน้ต หลักฐาน เวลา และรีโมตควบคุม
+อัปโหลดเนื้อหาภายในโฟลเดอร์นี้ไปยัง root ของ repository แล้วเปิด Pages จาก branch ที่ใช้งาน ไม่ต้อง build
 
-เบราว์เซอร์อาจบล็อกหน้าต่างใหม่ในครั้งแรก ให้กดอนุญาต popup สำหรับเว็บไซต์นี้
+## Deploy บน Cloudflare Pages
 
-## โครงเรื่อง 13 ฉาก
+- Framework preset: None
+- Build command: เว้นว่าง
+- Build output directory: `/` หรือโฟลเดอร์ที่มี `index.html`
 
-1. Opening
-2. Research goal
-3. Conventional FAAS vs DMSS-FAAS
-4. Virtual experiment
-5. Sorbent evidence
-6. Optimization
-7. Adsorption behavior
-8. Performance and sensitivity
-9. Validation and reliability
-10. Real sample results
-11. Experimental scope
-12. Conclusion
-13. Q&A backup
+## การอัปเดตจากเวอร์ชันเก่า
 
-## ไฟล์หลัก
+เนื่องจากมีการเปลี่ยน cache เป็น `dmss-faas-interactive-v2.3.0` ควรทำอย่างใดอย่างหนึ่งหลัง deploy:
 
-- `index.html` — หน้าหลักภาษาอังกฤษ
-- `index_th.html` — หน้าหลักภาษาไทย
-- `styles.css` — design system และ responsive layout ใหม่
-- `app.js` — navigation, timer, animation, panels และ interaction
-- `research_content.js` — สคริปต์และเนื้อหาเชิงลึกสองภาษา
-- `presenter.html` / `presenter.js` — Presenter แบบสองจอ
-- `manifest.webmanifest` / `sw.js` — PWA และ offline cache
-- `PRESENTER_SCRIPT_TH.md` / `PRESENTER_SCRIPT_EN.md` — สคริปต์แยกไฟล์
-- `TEST_REPORT_TH.md` — รายงานการตรวจสอบเวอร์ชันนี้
+1. Reload หน้า 1–2 ครั้ง
+2. Clear site data/cache
+3. ถ้าติดตั้ง PWA เก่า ให้ลบแล้วติดตั้งใหม่
 
 ## หมายเหตุทางวิทยาศาสตร์
 
-- กราฟ DOE ใช้สมการ regression ที่รายงานในบทความและจำกัดการตีความไว้ในช่วงตัวแปรที่ศึกษา
-- การเคลื่อนที่ของไอออนและบาง visualization เป็น conceptual animation เพื่ออธิบายกลไก
-- ค่า sensitivity gain หมายถึงการเพิ่มความชัน calibration curve ไม่ได้หมายถึง accuracy เพิ่มขึ้นเท่ากัน
-- “Not detected” ไม่ได้แปลว่าความเข้มข้นเป็นศูนย์
-- ภาพจากบทความใช้เพื่อการนำเสนอในชั้นเรียนตามบริบทของโปรเจกต์นี้
+- Animation เป็นการอธิบายเชิงแนวคิดตามลำดับวิธีในบทความ ไม่ได้จำลองอัตราการเคลื่อนที่จริง
+- ช่วงเวลา 25 นาทีถูกย่อให้เล่นได้ภายในไม่กี่วินาที แต่ข้อความระบุเวลาจริงไว้ครบ
+- sensitivity gain หมายถึงความชัน calibration curve ไม่ใช่ accuracy เพิ่มตามจำนวนเท่า
+- qmax เป็นความจุตัวดูดซับ ไม่ใช่ความเข้มข้นในเครื่องดื่ม
+- not detected หมายถึงต่ำกว่า LOD ไม่ได้แปลว่าไม่มีสารโดยสมบูรณ์

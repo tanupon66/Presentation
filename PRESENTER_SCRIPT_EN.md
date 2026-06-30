@@ -1,6 +1,6 @@
 # English Presenter Script — DMSS-FAAS
 
-Version 1.4.0
+Version 2.3.0
 
 ## 1. Opening
 **Suggested time:** 0:40

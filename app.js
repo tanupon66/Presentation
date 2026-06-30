@@ -187,29 +187,14 @@
   function applyActiveSceneFit(){
     const compact = isCompactLandscape();
     document.body.classList.toggle('compact-landscape', compact);
+    // Do not scale the active scene with CSS zoom. Zoom causes incorrect
+    // pointer coordinates, inflated scroll widths and clipped dialogs.
     scenes.forEach(scene => {
-      scene.style.zoom = '';
-      scene.style.width = '';
-      scene.style.height = '';
-      scene.style.transformOrigin = '';
+      scene.style.removeProperty('zoom');
+      scene.style.removeProperty('width');
+      scene.style.removeProperty('height');
+      scene.style.removeProperty('transform-origin');
     });
-    if(!compact) return;
-    const active = scenes[current];
-    if(!active) return;
-    const topbarH = document.querySelector('.topbar')?.offsetHeight || 0;
-    const availableH = Math.max(240, window.innerHeight - topbarH - 8);
-    const availableW = Math.max(320, window.innerWidth - 8);
-    active.style.zoom = '1';
-    active.style.width = '100%';
-    active.style.height = 'auto';
-    const contentH = Math.max(active.scrollHeight, active.offsetHeight, 1);
-    const contentW = Math.max(active.scrollWidth, active.offsetWidth, 1);
-    let scale = Math.min(1, availableH / contentH, availableW / contentW);
-    scale = Math.max(0.50, Number.isFinite(scale) ? scale : 1);
-    active.style.zoom = String(scale);
-    active.style.width = `${100 / scale}%`;
-    active.style.height = `${100 / scale}%`;
-    active.style.transformOrigin = 'top center';
   }
 
   function postPresenterState(){
@@ -1014,6 +999,9 @@
     if(!fig) return;
     const topicDialog = document.getElementById('topicDetailDialog');
     if(topicDialog?.open) topicDialog.close();
+    const compactDialog = document.getElementById('compactTopicDialog');
+    if(compactDialog?.open) compactDialog.close();
+    document.documentElement.classList.remove('has-open-dialog');
     if(sourceDialog?.open) sourceDialog.close();
     toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false);
     const dialog = ensurePaperEvidenceDialog();
@@ -1160,6 +1148,242 @@
     });
   }
 
+  // v2.3.0 — compact topic triggers and viewport-safe detail dialog.
+  // Slides remain visually clean; details appear only after a topic is tapped.
+  const compactTopicWords = {
+    topics: lang === 'th' ? 'หัวข้อเพิ่มเติม' : 'Explore topics',
+    play: lang === 'th' ? 'เล่นคำอธิบาย' : 'Play explanation',
+    playing: lang === 'th' ? 'กำลังเล่น…' : 'Playing…',
+    close: lang === 'th' ? 'ปิดหน้าต่าง' : 'Close dialog',
+    overview: lang === 'th' ? 'ภาพรวมของฉาก' : 'Scene overview',
+    theory: lang === 'th' ? 'คำอธิบายเชิงวิชาการ' : 'Scientific explanation',
+    caution: lang === 'th' ? 'ข้อควรระวังในการตีความ' : 'Interpretive caution',
+    source: lang === 'th' ? 'ตำแหน่งอ้างอิงในบทความ' : 'Paper source',
+    evidence: lang === 'th' ? 'หลักฐานเพิ่มเติม' : 'Additional evidence',
+    figures: lang === 'th' ? 'รูปจริงจากบทความ' : 'Figures from the paper',
+    tapFigure: lang === 'th' ? 'แตะรูปเพื่อขยาย' : 'Tap a figure to enlarge'
+  };
+
+  const topicFigureMap = {
+    0: ['workflow_full', 'fig1E', 'workflow_full'],
+    1: ['workflow_full', 'char_full', 'micro_full'],
+    2: [null, 'workflow_full', 'fig1E'],
+    3: ['fig1E', 'fig1A', 'fig1E'],
+    4: ['fig3B', 'fig2A', 'fig3E'],
+    5: [null, null, null],
+    6: ['fig2B', 'fig3B', 'char_full'],
+    7: ['fig1E', null, 'workflow_full'],
+    8: ['char_full', 'fig1E', 'micro_full'],
+    9: [null, null, null],
+    10: [null, null, null],
+    11: ['workflow_full', 'fig1E', 'micro_full'],
+    12: [null, null, null]
+  };
+
+  function removeLegacyInjectedContent(){
+    document.querySelectorAll('.scene-topic-panel,.dense-scene-enrichment,.theory-caption').forEach(node => node.remove());
+    const old = document.getElementById('topicDetailDialog');
+    if(old) old.remove();
+  }
+
+  function ensureCompactTopicDialog(){
+    let dialog = document.getElementById('compactTopicDialog');
+    if(dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'compactTopicDialog';
+    dialog.className = 'compact-topic-dialog';
+    dialog.setAttribute('aria-labelledby', 'compactTopicTitle');
+    dialog.innerHTML = `
+      <div class="compact-topic-shell">
+        <header class="compact-topic-header">
+          <div>
+            <span id="compactTopicScene"></span>
+            <h3 id="compactTopicTitle"></h3>
+          </div>
+          <button class="compact-topic-close" id="compactTopicClose" type="button" aria-label="${compactTopicWords.close}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </header>
+        <div class="compact-topic-scroll">
+          <div class="compact-topic-layout" id="compactTopicLayout">
+            <figure class="compact-topic-media" id="compactTopicMedia" hidden>
+              <button type="button" id="compactTopicFigureButton">
+                <img id="compactTopicImage" alt="" src="" />
+                <span id="compactTopicFigureLabel"></span>
+              </button>
+            </figure>
+            <article class="compact-topic-copy">
+              <section class="compact-topic-overview">
+                <span>${compactTopicWords.overview}</span>
+                <p id="compactTopicOverview"></p>
+              </section>
+              <section class="compact-topic-section">
+                <span>${compactTopicWords.theory}</span>
+                <p id="compactTopicBody"></p>
+              </section>
+              <section class="compact-topic-section compact-topic-warning">
+                <span>${compactTopicWords.caution}</span>
+                <p id="compactTopicCaution"></p>
+              </section>
+              <section class="compact-topic-section">
+                <span>${compactTopicWords.source}</span>
+                <p id="compactTopicSource"></p>
+              </section>
+              <details class="compact-topic-more" id="compactTopicMore">
+                <summary>${compactTopicWords.evidence}</summary>
+                <div class="compact-topic-facts" id="compactTopicFacts"></div>
+                <div class="compact-topic-metrics" id="compactTopicMetrics"></div>
+              </details>
+              <section class="compact-topic-paper-strip" id="compactTopicPaperStrip" hidden>
+                <div><span>${compactTopicWords.figures}</span><small>${compactTopicWords.tapFigure}</small></div>
+                <div class="compact-topic-paper-list" id="compactTopicPaperList"></div>
+              </section>
+            </article>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+    const close = () => {
+      if(dialog.open) dialog.close();
+      document.documentElement.classList.remove('has-open-dialog');
+    };
+    dialog.querySelector('#compactTopicClose').addEventListener('click', close);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
+    dialog.addEventListener('click', event => { if(event.target === dialog) close(); });
+    dialog.addEventListener('close', () => document.documentElement.classList.remove('has-open-dialog'));
+    return dialog;
+  }
+
+  function topicPaperKeys(sceneIndex){
+    const extra = sceneEnrichment[sceneIndex] || {};
+    return [...new Set((extra.images || []).filter(key => figureRegistry[key]))].slice(0, 4);
+  }
+
+  function openCompactTopic(sceneIndex, topicIndex){
+    const data = contentData[sceneIndex];
+    const section = data?.sections?.[topicIndex];
+    if(!data || !section) return;
+    toggleNotes(false); togglePresenter(false); toggleResearch(false); toggleMobileMenu(false);
+    if(sourceDialog?.open) sourceDialog.close();
+    const paperDialog = document.getElementById('paperEvidenceDialog');
+    if(paperDialog?.open) paperDialog.close();
+
+    const dialog = ensureCompactTopicDialog();
+    dialog.querySelector('#compactTopicScene').textContent = `${lang === 'th' ? 'ฉาก' : 'Scene'} ${String(sceneIndex + 1).padStart(2, '0')} • ${scenes[sceneIndex]?.dataset.title || ''}`;
+    dialog.querySelector('#compactTopicTitle').textContent = section.title;
+    dialog.querySelector('#compactTopicOverview').textContent = data.summary || '';
+    dialog.querySelector('#compactTopicBody').textContent = section.body || '';
+    dialog.querySelector('#compactTopicCaution').textContent = data.caution || '—';
+    dialog.querySelector('#compactTopicSource').textContent = data.source || '—';
+
+    const facts = (sceneEnrichment[sceneIndex]?.facts || []).slice(0, 4);
+    dialog.querySelector('#compactTopicFacts').innerHTML = facts.map((fact, index) => `<p><b>${String(index + 1).padStart(2, '0')}</b><span>${fact}</span></p>`).join('');
+    const metrics = (sceneEnrichment[sceneIndex]?.metrics || []).slice(0, 4);
+    dialog.querySelector('#compactTopicMetrics').innerHTML = metrics.map(([label, value]) => `<div><span>${label}</span><b>${value}</b></div>`).join('');
+    const more = dialog.querySelector('#compactTopicMore');
+    more.hidden = !facts.length && !metrics.length;
+    more.open = false;
+
+    const selectedKey = topicFigureMap[sceneIndex]?.[topicIndex] || null;
+    const selectedFigure = selectedKey ? figureRegistry[selectedKey] : null;
+    const media = dialog.querySelector('#compactTopicMedia');
+    const layout = dialog.querySelector('#compactTopicLayout');
+    if(selectedFigure){
+      const copy = selectedFigure[lang] || selectedFigure.en;
+      media.hidden = false;
+      layout.classList.add('has-media');
+      const image = dialog.querySelector('#compactTopicImage');
+      image.src = selectedFigure.src;
+      image.alt = copy.title;
+      dialog.querySelector('#compactTopicFigureLabel').textContent = copy.title;
+      dialog.querySelector('#compactTopicFigureButton').onclick = event => {
+        event.stopPropagation();
+        openPaperEvidence(selectedKey);
+      };
+    } else {
+      media.hidden = true;
+      layout.classList.remove('has-media');
+      dialog.querySelector('#compactTopicImage').removeAttribute('src');
+      dialog.querySelector('#compactTopicFigureButton').onclick = null;
+    }
+
+    const paperKeys = topicPaperKeys(sceneIndex);
+    const strip = dialog.querySelector('#compactTopicPaperStrip');
+    const list = dialog.querySelector('#compactTopicPaperList');
+    if(paperKeys.length){
+      strip.hidden = false;
+      list.innerHTML = paperKeys.map(key => {
+        const figure = figureRegistry[key];
+        const copy = figure[lang] || figure.en;
+        return `<button type="button" data-paper-key="${key}"><img src="${figure.src}" alt="${copy.title}" loading="lazy"><span>${copy.title}</span></button>`;
+      }).join('');
+    } else {
+      strip.hidden = true;
+      list.innerHTML = '';
+    }
+
+    if(!dialog.open){
+      document.documentElement.classList.add('has-open-dialog');
+      dialog.showModal();
+    }
+    requestAnimationFrame(() => { dialog.querySelector('.compact-topic-scroll').scrollTop = 0; });
+  }
+
+  function buildResponsiveSceneToolbars(){
+    removeLegacyInjectedContent();
+    scenes.forEach((scene, sceneIndex) => {
+      const data = contentData[sceneIndex];
+      if(!data?.sections?.length || scene.querySelector('.scene-tool-row')) return;
+      const row = document.createElement('div');
+      row.className = 'scene-tool-row';
+      row.setAttribute('aria-label', compactTopicWords.topics);
+      const topics = data.sections.map((section, topicIndex) => `
+        <button class="scene-topic-trigger" type="button" data-compact-topic="1" data-scene-index="${sceneIndex}" data-topic-index="${topicIndex}">
+          <b>${String(topicIndex + 1).padStart(2, '0')}</b><span>${section.title}</span>
+        </button>`).join('');
+      row.innerHTML = `<div class="scene-topic-triggers">${topics}</div><button class="scene-play-trigger" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg><span>${compactTopicWords.play}</span></button>`;
+      const heading = scene.querySelector('.section-heading');
+      const heroActions = scene.querySelector('.hero-actions');
+      if(heading) heading.insertAdjacentElement('afterend', row);
+      else if(heroActions) heroActions.insertAdjacentElement('afterend', row);
+      else scene.insertAdjacentElement('afterbegin', row);
+      row.querySelector('.scene-play-trigger').addEventListener('click', event => {
+        const button = event.currentTarget;
+        button.classList.add('is-playing');
+        button.querySelector('span').textContent = compactTopicWords.playing;
+        playSceneAnimation(sceneIndex);
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setTimeout(() => {
+          button.classList.remove('is-playing');
+          button.querySelector('span').textContent = compactTopicWords.play;
+        }, reduced ? 900 : 6500);
+      });
+    });
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-compact-topic]');
+      if(!button) return;
+      openCompactTopic(Number(button.dataset.sceneIndex), Number(button.dataset.topicIndex));
+    });
+  }
+
+  function repairUnreliableIcons(){
+    const icons = [
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h4l2-6 4 12 2-6h6"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5c-7 0-11 4-11 10 4 1 9-1 11-10zM6 19c2-5 6-8 12-10"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4H7zM5 8h14v12H5z"/><path d="M9 12h6"/></svg>'
+    ];
+    document.querySelectorAll('.efficiency-grid .eff-icon').forEach((node, index) => {
+      node.innerHTML = icons[index] || icons[0];
+      node.classList.add('is-svg-icon');
+    });
+    const fullscreen = document.getElementById('fullscreenButton');
+    if(fullscreen) fullscreen.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+  }
+
+  // Keep the old delegated topic handler compatible with the clean dialog.
+  openTopicDialog = openCompactTopic;
+
   function activateSceneEntry(sceneIndex){
     clearSceneAnimationTimers();
     scenes.forEach((s,i)=>{
@@ -1173,11 +1397,8 @@
     });
   }
 
-  renderSceneTopicPanels();
-  renderDenseSceneEnrichment();
-  reinforceCompactIcons();
-  addTheoryCaptions();
-  addSceneAnimationControls();
+  buildResponsiveSceneToolbars();
+  repairUnreliableIcons();
   // Install prompt
   const installToast = document.getElementById('installToast');
   const installButton = document.getElementById('installButton');

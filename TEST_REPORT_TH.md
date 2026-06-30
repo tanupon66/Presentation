@@ -1,67 +1,55 @@
-# รายงานการทดสอบ DMSS-FAAS Interactive Presentation v2.0.0
+# Test Report — DMSS-FAAS Interactive Research Story v2.3.0
 
-วันที่ตรวจสอบ: 30 มิถุนายน 2026
+วันที่ทดสอบ: 2026-06-30
 
-## 1. Static validation
+## การตรวจสอบโครงสร้าง
 
-ผ่านการตรวจสอบ 68 รายการ รวมถึง:
+- JavaScript syntax ผ่าน: `app.js`, `scene_enrichment.js`, `presenter.js`, `sw.js`
+- พบฉากครบ 13 ฉากทั้งภาษาอังกฤษและภาษาไทย
+- สร้าง compact topic toolbar ครบ 13 ฉาก
+- ไม่สร้าง legacy `scene-topic-panel` หรือ `dense-scene-enrichment` ลงในหน้า
+- เนื้อหาเชิงลึกมี 3 หัวข้อต่อฉากครบทั้ง 13 ฉาก
+- พบภาพจาก paper แบบเต็ม 3 ภาพ และภาพครอป 17 ภาพ
+- Service worker cache version: `dmss-faas-interactive-v2.3.0`
 
-- JavaScript syntax: `app.js`, `presenter.js`, `research_content.js`, `sw.js`
-- JSON parse: `manifest.webmanifest`
-- HTML structure: `index.html`, `index_th.html`, `presenter.html`
-- ไม่พบ DOM ID ซ้ำในหน้าหลัก
-- ทุก `getElementById()` ใน controller มี element ปลายทาง
-- Service Worker อ้างอิงไฟล์ offline core ที่มีอยู่จริง
-- ไม่พบ responsive logic ที่ใช้ CSS `zoom`
-- Experiment particles ใช้ลำดับ deterministic
-- ไฟล์หลักอ้างอิงเวอร์ชัน cache v2.0.0
+## Browser runtime test
 
-ผล: **PASS 68/68**
+ทดสอบด้วย Chromium headless โดยโหลด HTML, CSS และ JavaScript จริง:
 
-## 2. Chromium layout rendering
+- Topic dialog เปิดและปิดได้
+- Topic dialog อยู่ภายใน viewport ทุกขนาดที่ทดสอบ
+- Mobile portrait เปลี่ยนเป็น bottom sheet
+- Mobile landscape เปลี่ยนเป็น dialog เต็มจอ
+- Desktop และ tablet ใช้ modal ที่มี internal scrolling
+- เปิด Paper Evidence Viewer จากรูปใน topic dialog ได้โดยไม่เกิด dialog ซ้อน
+- ไม่พบ JavaScript runtime error
+- เล่น animation ได้ครบทั้ง 13 ฉาก
+- เปลี่ยนฉากแล้ว animation timer เดิมถูกยกเลิก
+- Virtual experiment, synthesis, optimization, adsorption, sensitivity และ sample selector ทำงาน
 
-ทดสอบการแสดงผลจริงครบ 13 ฉากในขนาด:
+## Responsive test
 
-- Desktop: 1440 × 900
-- Tablet: 1024 × 768
-- Mobile portrait: 390 × 844
-- Mobile landscape: 844 × 390
+ขนาดที่ตรวจด้วย browser runtime:
 
-ผลที่ตรวจ:
+- 320 × 568 — โทรศัพท์ขนาดเล็ก
+- 390 × 844 — โทรศัพท์แนวตั้ง
+- 412 × 915 — โทรศัพท์แนวตั้ง ภาษาไทย
+- 667 × 375 — โทรศัพท์แนวนอนความสูงต่ำ
+- 844 × 390 — โทรศัพท์แนวนอน
+- 768 × 1024 — แท็บเล็ตแนวตั้ง
+- 1024 × 768 — แท็บเล็ตแนวนอน
+- 1440 × 900 — เดสก์ท็อป
+- 2560 × 1440 — จอกว้าง
 
-- มี active scene เพียงหนึ่งฉากทุกครั้ง
-- Navigation ไปครบทั้ง 13 ฉาก
-- ไม่พบ page-level horizontal overflow
-- ไม่พบ active-scene horizontal overflow
-- หน้า Reliability บนมือถือแสดงเป็นคอลัมน์เดียวและไม่ดันเนื้อหาออกนอกจอ
-- ไม่พบ JavaScript page error ในทุก viewport
+ผลการตรวจ:
 
-ผล: **PASS**
+- `document.scrollWidth` เท่ากับ viewport width ในทุกขนาดที่ทดสอบ
+- ทั้ง 13 ฉากไม่มี document-level horizontal overflow บนมือถือแนวตั้งและแนวนอน
+- เนื้อหาที่ยาวเลื่อนภายใน scene โดยไม่ใช้ CSS zoom
+- แถบหัวข้อเลื่อนแนวนอนเฉพาะภายใน toolbar
+- Dialog, ปุ่มปิด และข้อความไม่ออกนอก safe viewport
+- ภาษาไทยและอังกฤษผ่านโดยไม่พบ runtime error
 
-## 3. Interaction checks
+## หมายเหตุ
 
-ตรวจสอบแล้ว:
-
-- Chapter rail กระโดดไปยังฉากที่เลือก
-- Virtual experiment เดินขั้นและ reset กลับสู่สถานะเริ่มต้น
-- Notes, Presenter และ Research panels ทำงานแบบ mutually exclusive
-- Source figure dialog เปิดและปิดได้
-- Rehearsal timer เดินจาก 15:00 เป็น 14:59 และ reset ได้
-- Auto demo แสดงสถานะเฉพาะเมื่อเปิด และซ่อนเมื่อปิด
-- หน้าไทยโหลดครบ 13 ฉากและไม่ล้นจอ
-- Dual-screen Presenter มีปุ่มควบคุม 6 ปุ่มและไม่ล้นแนวนอน
-
-ผล: **PASS — ไม่พบ JavaScript error**
-
-## 4. PWA checks
-
-- Manifest, start URL, scope และ display mode ถูกต้อง
-- Offline core list ใน Service Worker ตรงกับไฟล์จริง
-- Cache name อัปเดตเป็น v2.0.0 เพื่อไม่ใช้ asset เก่าปะปน
-- HTML/CSS/JS ใช้ version query v2.0.0
-
-หมายเหตุ: การ render test ใช้ Chromium headless โดยฝัง local CSS/JS เข้าเอกสารโดยตรง เนื่องจากสภาพแวดล้อมทดสอบบล็อกการนำทางไป local URL ส่วนโครงสร้าง PWA และรายการ offline cache ตรวจด้วย static validation
-
-## 5. ขอบเขตการรับรอง
-
-ผลทดสอบครอบคลุมโครงสร้าง โค้ด interaction และ viewport หลัก แต่เบราว์เซอร์/อุปกรณ์จริงบางรุ่นอาจมีพฤติกรรม popup, fullscreen หรือ safe-area ต่างกัน ควรทดสอบรอบสุดท้ายบนอุปกรณ์ที่จะใช้พรีเซนต์จริงก่อนวันนำเสนอ
+Animation เป็นการย่อเวลาเพื่อการนำเสนอ ไม่ใช่ simulation เชิงจลนศาสตร์จริง ควรตรวจบนโทรศัพท์จริงหลัง deploy อีกครั้ง เพราะพื้นที่ browser chrome และ safe-area ของแต่ละรุ่นอาจต่างกันเล็กน้อย

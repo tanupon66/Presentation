@@ -1,13 +1,13 @@
 {
-  "name": "DMSS-FAAS Interactive Research Deck v2.0.0",
+  "name": "DMSS-FAAS Interactive Research Story v2.3.0",
   "short_name": "DMSS-FAAS",
-  "description": "Bilingual interactive research presentation for DMSS-FAAS determination of cadmium and lead in tea and coffee.",
+  "description": "Interactive 15-minute seminar presentation on cadmium and lead determination in tea and coffee.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#071217",
-  "theme_color": "#071217",
+  "background_color": "#071d24",
+  "theme_color": "#071d24",
   "icons": [
     {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
   ]
