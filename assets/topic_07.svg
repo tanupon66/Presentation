@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="t d">
+<title id="t">07. Adsorption</title><desc id="d">Cd and Pb interaction on M-OPP</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#08212A"/><stop offset="100%" stop-color="#06161C"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.25"/></filter>
+</defs>
+<rect width="1200" height="720" fill="url(#bg)"/>
+<circle cx="940" cy="160" r="170" fill="#0f3b43" opacity="0.18"/>
+<circle cx="170" cy="620" r="230" fill="#1c6a64" opacity="0.15"/>
+<rect x="48" y="48" rx="28" ry="28" width="1104" height="624" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.1)"/>
+<text x="82" y="102" fill="#71e0bd" font-size="22" font-family="Arial,Helvetica,sans-serif" letter-spacing="4">DMSS-FAAS VISUAL TOPIC</text>
+<text x="82" y="170" fill="#F3F7F7" font-size="54" font-weight="700" font-family="Arial,Helvetica,sans-serif">07. Adsorption</text>
+<text x="82" y="214" fill="#D0E6E4" font-size="28" font-family="Arial,Helvetica,sans-serif">Cd and Pb interaction on M-OPP</text>
+<text x="82" y="620" fill="#9FC0BE" font-size="24" font-family="Arial,Helvetica,sans-serif">Tap a topic chip to open a deeper explanation with speaker-ready context.</text>
+<g filter="url(#shadow)">
+  <rect x="112" y="286" rx="26" width="468" height="254" fill="#0C2530" stroke="#1B5560"/>
+  <rect x="644" y="286" rx="26" width="444" height="254" fill="#0C2530" stroke="#1B5560"/>
+  <circle cx="531" cy="369" r="92" fill="none" stroke="#ff9958" stroke-width="26" stroke-dasharray="410 180" transform="rotate(-35 531 369)"/>
+  <circle cx="531" cy="369" r="62" fill="none" stroke="#ffcc77" stroke-width="6" stroke-dasharray="9 10" opacity="0.9"/>
+  <rect x="180" y="510" width="42" height="70" rx="8" fill="#71e0bd" opacity="0.55"/><rect x="252" y="480" width="42" height="100" rx="8" fill="#71e0bd" opacity="0.65"/><rect x="324" y="450" width="42" height="130" rx="8" fill="#71e0bd" opacity="0.75"/><rect x="396" y="420" width="42" height="160" rx="8" fill="#71e0bd" opacity="0.85"/><rect x="468" y="510" width="42" height="70" rx="8" fill="#71e0bd" opacity="0.55"/><rect x="540" y="480" width="42" height="100" rx="8" fill="#71e0bd" opacity="0.65"/>
+  <line x1="160" y1="504" x2="532" y2="504" stroke="#ffb86d" stroke-width="6" stroke-dasharray="15 12"/>
+  <circle cx="760" cy="380" r="20" fill="#ffb86d"/><text x="747" y="387" fill="#04242d" font-size="18" font-weight="700" font-family="Arial">Cd</text><circle cx="830" cy="424" r="20" fill="#ffb86d"/><text x="817" y="431" fill="#04242d" font-size="18" font-weight="700" font-family="Arial">Pb</text><circle cx="900" cy="380" r="20" fill="#ffb86d"/><text x="887" y="387" fill="#04242d" font-size="18" font-weight="700" font-family="Arial">pH</text><circle cx="970" cy="424" r="20" fill="#ffb86d"/><text x="957" y="431" fill="#04242d" font-size="18" font-weight="700" font-family="Arial">FA</text><circle cx="1040" cy="380" r="20" fill="#ffb86d"/><text x="1027" y="387" fill="#04242d" font-size="18" font-weight="700" font-family="Arial">M</text>
+  <rect x="760" y="448" rx="14" width="252" height="54" fill="#112a34" stroke="#245765"/>
+  <text x="788" y="481" fill="#D0E6E4" font-size="22" font-family="Arial">interactive detail popup ready</text>
+</g>
+</svg>
